@@ -15,7 +15,7 @@ fn main() {
     let mut window = Window::new(275., 150.).unwrap();
     window.on_load(&on_load);
     window.set_title("oh hai!");
-    window.set_background_color(Color::red());
+    window.set_background_color(Color::green());
 
     let mut label = Label::new("hello", Rect::new(10., 10., 150., 20.));
     label.attach(&mut window);

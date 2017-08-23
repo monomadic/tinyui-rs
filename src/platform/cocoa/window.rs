@@ -7,6 +7,7 @@ use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask,
                      NSApplicationActivateIgnoringOtherApps, NSApplicationActivationPolicyRegular };
 
 use Color;
+use Rect;
 
 pub struct Window<'cb> {
     nswindow: id,
@@ -81,6 +82,10 @@ impl<'cb> Window<'cb> {
 
     pub fn add_subview(&mut self, view: id) {
         unsafe { NSView::addSubview_(self.nsview, view) };
+    }
+
+    pub fn frame(&self) -> Rect {
+        Rect::from_nsrect(unsafe { NSWindow::frame(self.nswindow) })
     }
 
 //    /// Attach a Window class to an existing window.

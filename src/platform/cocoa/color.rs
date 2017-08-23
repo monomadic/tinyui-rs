@@ -9,6 +9,10 @@ impl Color {
         Color { id: unsafe{ msg_send![class("NSColor"), redColor] } }
     }
 
+    pub fn green() -> Color {
+        Color { id: unsafe{ msg_send![class("NSColor"), greenColor] } }
+    }
+
     pub fn nscolor(&self) -> id {
         self.id
     }
