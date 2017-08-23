@@ -19,13 +19,13 @@ pub struct Window<'cb> {
 impl<'cb> Window<'cb> {
 
     /// Create a new Window from scratch.
-    pub fn new() -> Result<Window<'cb>, String> {
+    pub fn new(width: f64, height: f64) -> Result<Window<'cb>, String> {
 
         // callback();
 
         let window = unsafe { NSWindow::alloc(nil)
             .initWithContentRect_styleMask_backing_defer_(NSRect::new(NSPoint::new(0., 0.),
-                                                                      NSSize::new(200., 200.)),
+                                                                      NSSize::new(width, height)),
                                                           NSTitledWindowMask,
                                                           NSBackingStoreBuffered,
                                                           NO) };
