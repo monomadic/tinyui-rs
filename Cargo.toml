@@ -1,0 +1,11 @@
+[package]
+name = "tinyui"
+version = "0.1.0"
+authors = ["Rob Saunders <rob@wearebrandnew.com>"]
+
+[lib]
+name="tinyui"
+
+[dependencies]
+objc = "0.2"
+cocoa = "0.9.2"
