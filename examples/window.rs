@@ -11,7 +11,7 @@ fn main() {
         println!("loaded window.");
     };
 
-    let mut window = Window::new(300., 200.).unwrap();
+    let mut window = Window::new(300., 150.).unwrap();
     window.on_load(&on_load);
     window.set_title("oh hai!");
     window.run();
