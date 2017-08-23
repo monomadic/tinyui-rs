@@ -20,7 +20,7 @@ pub fn get_window_responder_class() -> *const Class {
     static mut RESPONDER_CLASS: *const Class = 0 as *const Class;
     static INIT: Once = ONCE_INIT;
 
-    INIT.call_once(|| unsafe {
+    INIT.call_once(|| {
         let superclass = Class::get("NSView").unwrap();
         let mut decl = ClassDecl::new("ViewResponder", superclass).unwrap();
 
@@ -31,7 +31,6 @@ pub fn get_window_responder_class() -> *const Class {
         //         this.set_ivar("ViewController", controller);
         //     }
         // }
-
 
         /// Invoked when the image is released
         extern fn prepare_for_drag_operation(_: &Object, _: Sel, _: id) {}
@@ -107,45 +106,46 @@ pub fn get_window_responder_class() -> *const Class {
         }
 
         extern fn did_become_active(this: &Object, _: Sel, _: id) {
-            unsafe {
-                println!("focused");
-            }
+            println!("focused");
         }
 
-        // decl.add_method(sel!(setViewController:),
-        //                 setViewController as
-        //                 extern "C" fn(this: &mut Object, _: Sel, _: *mut c_void));
+        unsafe {
 
-        decl.add_method(sel!(acceptsFirstResponder),
-            acceptsFirstResponder as extern fn(this: &Object, _: Sel) -> BOOL);
+            // decl.add_method(sel!(setViewController:),
+            //                 setViewController as
+            //                 extern "C" fn(this: &mut Object, _: Sel, _: *mut c_void));
 
-        decl.add_method(sel!(acceptsFirstMouse:),
-            acceptsFirstMouse as extern fn(this: &Object, _: Sel, _: id) -> BOOL);
+            decl.add_method(sel!(acceptsFirstResponder),
+                acceptsFirstResponder as extern fn(this: &Object, _: Sel) -> BOOL);
 
-        decl.add_method(sel!(applicationDidBecomeActive:),
-                        did_become_active as extern fn(&Object, Sel, id));
+            decl.add_method(sel!(acceptsFirstMouse:),
+                acceptsFirstMouse as extern fn(this: &Object, _: Sel, _: id) -> BOOL);
 
-        // func mouseDown(with event: NSEvent)
-        // https://developer.apple.com/documentation/appkit/nsresponder/1524634-mousedown
-        decl.add_method(sel!(mouseDown:),
-            mouseEvent as extern fn(this: &Object, _: Sel, _: id));
+            decl.add_method(sel!(applicationDidBecomeActive:),
+                            did_become_active as extern fn(&Object, Sel, id));
 
-        decl.add_method(sel!(mouseUp:),
-            mouseEvent as extern fn(this: &Object, _: Sel, _: id));
+            // func mouseDown(with event: NSEvent)
+            // https://developer.apple.com/documentation/appkit/nsresponder/1524634-mousedown
+            decl.add_method(sel!(mouseDown:),
+                mouseEvent as extern fn(this: &Object, _: Sel, _: id));
 
-        // callbacks for drag and drop events
-        decl.add_method(sel!(draggingEntered:),
-            dragging_entered as extern fn(&Object, Sel, id) -> BOOL);
-        decl.add_method(sel!(prepareForDragOperation:),
-            prepare_for_drag_operation as extern fn(&Object, Sel, id));
-        decl.add_method(sel!(performDragOperation:),
-            perform_drag_operation as extern fn(&Object, Sel, id) -> BOOL);
-        decl.add_method(sel!(concludeDragOperation:),
-            conclude_drag_operation as extern fn(&Object, Sel, id));
-        decl.add_method(sel!(draggingExited:),
-            dragging_exited as extern fn(&Object, Sel, id));
+            decl.add_method(sel!(mouseUp:),
+                mouseEvent as extern fn(this: &Object, _: Sel, _: id));
 
-        RESPONDER_CLASS = decl.register();
+            // callbacks for drag and drop events
+            decl.add_method(sel!(draggingEntered:),
+                dragging_entered as extern fn(&Object, Sel, id) -> BOOL);
+            decl.add_method(sel!(prepareForDragOperation:),
+                prepare_for_drag_operation as extern fn(&Object, Sel, id));
+            decl.add_method(sel!(performDragOperation:),
+                perform_drag_operation as extern fn(&Object, Sel, id) -> BOOL);
+            decl.add_method(sel!(concludeDragOperation:),
+                conclude_drag_operation as extern fn(&Object, Sel, id));
+            decl.add_method(sel!(draggingExited:),
+                dragging_exited as extern fn(&Object, Sel, id));
+
+            RESPONDER_CLASS = decl.register();
+        }
     });
     unsafe { RESPONDER_CLASS }
 }
