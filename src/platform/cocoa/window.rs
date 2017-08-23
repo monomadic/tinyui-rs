@@ -4,7 +4,7 @@ use std::os::raw::c_void;
 use cocoa::base::{ NO, YES };
 use cocoa::foundation::{ NSString, NSRect, NSSize, NSPoint, NSAutoreleasePool };
 use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask, NSBackingStoreBuffered, NSRunningApplication,
-                     NSApplicationActivateIgnoringOtherApps, NSApplicationActivationPolicyRegular };
+                     NSApplicationActivateIgnoringOtherApps, NSApplicationActivationPolicyRegular, NSFilenamesPboardType };
 
 use Color;
 use Rect;
@@ -33,8 +33,15 @@ impl<'cb> Window<'cb> {
                                                           NSBackingStoreBuffered,
                                                           NO) };
 
+        let view = unsafe { NSWindow::contentView(window) };
+
         unsafe {
             //            let _pool = NSAutoreleasePool::new(nil);
+            
+            // set the responder class delegate
+            use platform::platform::responder::*;
+            let responder = msg_send![get_window_responder_class(), new];
+            NSView::addSubview_(view, responder);
 
             let app = NSApp();
             app.setActivationPolicy_(NSApplicationActivationPolicyRegular);
@@ -43,14 +50,23 @@ impl<'cb> Window<'cb> {
             let current_app = NSRunningApplication::currentApplication(nil);
             current_app.activateWithOptions_(NSApplicationActivateIgnoringOtherApps);
 
-            window.center();
-            window.setOpaque_(YES);
+            window.setAcceptsMouseMovedEvents_(YES); // msg_send![window, setAcceptsMouseMovedEvents: YES];
             window.makeKeyAndOrderFront_(nil);
+            // window.setContentView_(view);
+            window.makeFirstResponder_(responder);
+
+            window.setOpaque_(YES);
+            window.center();
+
+            use cocoa::foundation::NSArray;
+            // register for drag and drop operations.
+            msg_send![window,
+                registerForDraggedTypes:NSArray::arrayWithObject(nil, NSFilenamesPboardType)];
         }
 
         Ok(Window {
             nswindow: window,
-            nsview: unsafe { NSWindow::contentView(window) },
+            nsview: view,
             on_load_callback: None,
         })
     }
