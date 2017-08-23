@@ -16,7 +16,6 @@ pub struct Size {
 }
 
 impl Rect {
-
     pub fn new(x: f64, y: f64, w: f64, h:f64) -> Self {
         Rect{ origin: Point{ x: x, y: y }, size: Size{ width: w, height: h }}
     }

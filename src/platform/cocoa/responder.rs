@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+#![allow(unused_variables)]
 
 // use cocoa;
 use cocoa::base::{id};
@@ -56,10 +57,10 @@ pub fn get_window_responder_class() -> *const Class {
                     let f = NSString::UTF8String(file);
                     let path = CStr::from_ptr(f).to_string_lossy().into_owned();
 
-                    let state: *mut c_void = *this.get_ivar("winitState");
+                    // let state: *mut c_void = *this.get_ivar("winitState");
                     // let state = &mut *(state as *mut DelegateState);
                     // emit_event(state, WindowEvent::DroppedFile(PathBuf::from(path)));
-                    println!("{:?}", PathBuf::from(path));
+                    println!("Dropped file: {:?}", PathBuf::from(path));
                 }
             };
 

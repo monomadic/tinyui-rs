@@ -38,6 +38,11 @@ impl<'cb> Window<'cb> {
         unsafe {
             //            let _pool = NSAutoreleasePool::new(nil);
 
+            window.setAcceptsMouseMovedEvents_(YES); // msg_send![window, setAcceptsMouseMovedEvents: YES];
+            window.makeKeyAndOrderFront_(nil);
+            // window.setContentView_(view);
+            window.makeFirstResponder_(view);
+
             // set the responder class delegate
             use platform::platform::responder::*;
             let responder = msg_send![get_window_responder_class(), new];
@@ -51,11 +56,6 @@ impl<'cb> Window<'cb> {
 
             let current_app = NSRunningApplication::currentApplication(nil);
             current_app.activateWithOptions_(NSApplicationActivateIgnoringOtherApps);
-
-            window.setAcceptsMouseMovedEvents_(YES); // msg_send![window, setAcceptsMouseMovedEvents: YES];
-            window.makeKeyAndOrderFront_(nil);
-            // window.setContentView_(view);
-            window.makeFirstResponder_(responder);
 
             window.setOpaque_(YES);
             window.center();
