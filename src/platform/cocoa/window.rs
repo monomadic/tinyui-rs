@@ -3,8 +3,10 @@ use std::os::raw::c_void;
 
 use cocoa::base::{ NO, YES };
 use cocoa::foundation::{ NSString, NSRect, NSSize, NSPoint, NSAutoreleasePool };
-use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSTitledWindowMask, NSBackingStoreBuffered, NSRunningApplication,
+use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask, NSBackingStoreBuffered, NSRunningApplication,
                      NSApplicationActivateIgnoringOtherApps, NSApplicationActivationPolicyRegular };
+
+use Color;
 
 pub struct Window<'cb> {
     nswindow: id,
@@ -63,6 +65,10 @@ impl<'cb> Window<'cb> {
         }
     }
 
+    pub fn set_background_color(&mut self, color: Color) {
+        unsafe { NSWindow::setBackgroundColor_(self.nswindow, color.nscolor()) };
+    }
+
     pub fn run(&mut self) {
         // if let Some(ref mut on_load) = self.on_load_callback {
         //     on_load();
@@ -71,6 +77,10 @@ impl<'cb> Window<'cb> {
             let app = NSApp();
             app.run();
         }
+    }
+
+    pub fn add_subview(&mut self, view: id) {
+        unsafe { NSView::addSubview_(self.nsview, view) };
     }
 
 //    /// Attach a Window class to an existing window.

@@ -1,0 +1,30 @@
+use cocoa::base::{ id, nil, NO };
+use cocoa::appkit::NSTextField;
+use cocoa::foundation::{ NSString };
+use Rect;
+use Window;
+
+pub struct Label {
+    id: id,
+}
+
+impl Label {
+    pub fn new(text: &str, position: Rect) -> Self {
+        unsafe {
+            let label = NSTextField::alloc(nil).initWithFrame_(position.to_nsrect());
+            label.setStringValue_(NSString::alloc(nil).init_str(text));
+
+            msg_send![label, setBezeled:NO];
+            msg_send![label, setDrawsBackground:NO];
+            msg_send![label, setEditable:NO];
+            msg_send![label, setSelectable:NO];
+            msg_send![label, setStringValue:NSString::alloc(nil).init_str(text)];
+
+            Label { id: label }
+        }
+    }
+
+    pub fn attach(&mut self, window: &mut Window) {
+        window.add_subview(self.id);
+    }
+}
