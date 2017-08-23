@@ -37,11 +37,13 @@ impl<'cb> Window<'cb> {
 
         unsafe {
             //            let _pool = NSAutoreleasePool::new(nil);
-            
+
             // set the responder class delegate
             use platform::platform::responder::*;
             let responder = msg_send![get_window_responder_class(), new];
             NSView::addSubview_(view, responder);
+
+            msg_send![window, setDelegate:responder];
 
             let app = NSApp();
             app.setActivationPolicy_(NSApplicationActivationPolicyRegular);
