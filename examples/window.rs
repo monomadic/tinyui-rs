@@ -5,9 +5,9 @@ use tinyui::{ Label, Rect, Color, Button };
 // use std::path::PathBuf;
 
 fn main() {
-    let on_file_drop = move|| {
-        println!("on_file_drop!!!!!");
-    };
+    // let on_file_drop = move|| {
+    //     println!("on_file_drop!!!!!");
+    // };
 
     let mut window = Window::new(275., 150.).unwrap();
     // window.on_load(&on_load);
@@ -21,6 +21,9 @@ fn main() {
     button.attach(&mut window);
 
     window.setup();
-    window.on_file_drop(Box::new(on_file_drop));
+    window.on_file_drop(Box::new(move|path| {
+        println!("file got dropped bro: {:?}", path);
+    }));
+
     window.run();
 }

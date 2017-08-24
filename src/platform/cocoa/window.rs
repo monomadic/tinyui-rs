@@ -19,7 +19,7 @@ pub struct Window {
 
 pub struct WindowEvents {
     pub title: String,
-    pub on_file_drop_callback: Option<Box<FnMut()>>,
+    pub on_file_drop_callback: Option<Box<FnMut(String)>>,
 }
 
 impl WindowEvents {
@@ -29,7 +29,7 @@ impl WindowEvents {
 
     pub fn on_file_drop(&mut self, path: String) {
         if let Some(ref mut callback) = self.on_file_drop_callback {
-            callback();
+            callback(path);
         }
     }
 }
@@ -119,7 +119,7 @@ impl Window {
         println!("{:?}", (*e).title);
     }
 
-    pub fn on_file_drop(&mut self, callback: Box<FnMut()>) {
+    pub fn on_file_drop(&mut self, callback: Box<FnMut(String)>) {
         self.events.on_file_drop_callback = Some(callback)
     }
 
