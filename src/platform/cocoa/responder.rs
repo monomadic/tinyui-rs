@@ -11,8 +11,6 @@ use objc::declare::ClassDecl;
 
 use std::os::raw::c_void;
 
-// use window::view_controller::*;
-use {Controller, ViewController};
 use platform::platform::window::WindowEvents;
 
 pub fn get_window_responder_class() -> *const Class {
@@ -43,7 +41,7 @@ pub fn get_window_responder_class() -> *const Class {
         extern fn perform_drag_operation(this: &Object, _: Sel, sender: id) -> BOOL {
             use cocoa::appkit::NSPasteboard;
             use cocoa::foundation::NSFastEnumeration;
-            use std::path::PathBuf;
+            // use std::path::PathBuf;
             use cocoa::appkit;
             use std::os::raw::c_void;
 
@@ -57,20 +55,10 @@ pub fn get_window_responder_class() -> *const Class {
                 let f = unsafe{ NSString::UTF8String(file) };
                 let path = unsafe { CStr::from_ptr(f).to_string_lossy().into_owned() };
 
-                // let view_controller: *mut c_void = unsafe { *this.get_ivar("ViewController") };
-                // let mut view_controller = unsafe { &mut *(view_controller as *mut WindowEvents) };
-
                 let event_ptr: *mut c_void = unsafe { *this.get_ivar("ViewController") };
-                println!("{:?}", event_ptr);
-                // let events = unsafe { event_ptr as *mut Box<WindowEvents> };
-                // unsafe { (*events).on_file_drop(path) };
-
                 let events: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
-                println!("{:?}", (*events).title);
+
                 (*events).on_file_drop(path);
-
-                // println!("Dropped file: {:?}", PathBuf::from(path));
-
             };
 
             YES

@@ -18,7 +18,6 @@ pub struct Window {
 }
 
 pub struct WindowEvents {
-    pub title: String,
     pub on_file_drop_callback: Option<Box<FnMut(String)>>,
 }
 
@@ -33,8 +32,6 @@ impl WindowEvents {
         }
     }
 }
-
-use ViewController;
 
 impl Window {
 
@@ -52,16 +49,9 @@ impl Window {
 
         let view = unsafe { NSWindow::contentView(window) };
 
-        let mut events = Box::new(WindowEvents{
-            title: "blorg".to_string(),
+        let events = Box::new(WindowEvents{
             on_file_drop_callback: None,
         });
-
-        if let Some(ref callback) = events.on_file_drop_callback {
-            println!("um it's some");
-        } else {
-            println!("ut's noe");
-        }
 
         unsafe {
             //            let _pool = NSAutoreleasePool::new(nil);
@@ -103,7 +93,6 @@ impl Window {
 
     pub fn setup(&mut self) {
         let event_ptr: *mut c_void = &mut self.events as *mut _ as *mut c_void;
-        println!("{:?}", event_ptr);
 
         // set the responder class delegate
         use platform::platform::responder::*;
@@ -115,8 +104,8 @@ impl Window {
             msg_send![self.nswindow, setDelegate:responder];
         }
 
-        let e: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
-        println!("{:?}", (*e).title);
+        // let e: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
+        // println!("{:?}", (*e).title);
     }
 
     pub fn on_file_drop(&mut self, callback: Box<FnMut(String)>) {
