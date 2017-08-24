@@ -19,10 +19,12 @@ pub struct Window<'cb> {
 //
 //}
 
+use ViewController;
+
 impl<'cb> Window<'cb> {
 
     /// Create a new Window from scratch.
-    pub fn new(width: f64, height: f64) -> Result<Window<'cb>, String> {
+    pub fn new<T:ViewController>(width: f64, height: f64, controller: *mut T) -> Result<Window<'cb>, String> {
 
         // callback();
 
@@ -35,6 +37,10 @@ impl<'cb> Window<'cb> {
 
         let view = unsafe { NSWindow::contentView(window) };
 
+        // set the responder class delegate
+        use platform::platform::responder::*;
+        let responder = unsafe { msg_send![get_window_responder_class(), new] };
+
         unsafe {
             //            let _pool = NSAutoreleasePool::new(nil);
 
@@ -42,10 +48,7 @@ impl<'cb> Window<'cb> {
             window.makeKeyAndOrderFront_(nil);
             // window.setContentView_(view);
             window.makeFirstResponder_(view);
-
-            // set the responder class delegate
-            use platform::platform::responder::*;
-            let responder = msg_send![get_window_responder_class(), new];
+            
             NSView::addSubview_(view, responder);
 
             msg_send![window, setDelegate:responder];
@@ -64,6 +67,10 @@ impl<'cb> Window<'cb> {
             // register for drag and drop operations.
             msg_send![window,
                 registerForDraggedTypes:NSArray::arrayWithObject(nil, NSFilenamesPboardType)];
+        }
+
+        unsafe {
+            msg_send![responder, setViewController: controller as *mut c_void];
         }
 
         Ok(Window {

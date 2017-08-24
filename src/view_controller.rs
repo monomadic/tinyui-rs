@@ -1,5 +1,6 @@
 pub trait ViewController {
     fn on_mouse_down(&mut self);
+    fn on_file_drop(&mut self, path: String);
 }
 
 pub struct Controller {
@@ -15,5 +16,9 @@ impl Controller {
 impl ViewController for Controller {
     fn on_mouse_down(&mut self) {
         self.controller.on_mouse_down();
+    }
+
+    fn on_file_drop(&mut self, path: String) {
+        self.controller.on_file_drop(path);
     }
 }

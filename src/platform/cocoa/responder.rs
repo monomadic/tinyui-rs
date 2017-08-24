@@ -9,9 +9,10 @@ use objc::runtime::{BOOL, YES};
 use objc::runtime::{Class, Object, Sel};
 use objc::declare::ClassDecl;
 
-// use std::os::raw::c_void;
+use std::os::raw::c_void;
 
 // use window::view_controller::*;
+use {Controller, ViewController};
 
 pub fn get_window_responder_class() -> *const Class {
 
@@ -24,13 +25,13 @@ pub fn get_window_responder_class() -> *const Class {
         let superclass = Class::get("NSView").unwrap();
         let mut decl = ClassDecl::new("ViewResponder", superclass).unwrap();
 
-        // decl.add_ivar::<*mut c_void>("ViewController");
+        decl.add_ivar::<*mut c_void>("ViewController");
 
-        // extern "C" fn setViewController(this: &mut Object, _: Sel, controller: *mut c_void) {
-        //     unsafe {
-        //         this.set_ivar("ViewController", controller);
-        //     }
-        // }
+        extern "C" fn setViewController(this: &mut Object, _: Sel, controller: *mut c_void) {
+            unsafe {
+                this.set_ivar("ViewController", controller);
+            }
+        }
 
         /// Invoked when the image is released
         extern fn prepare_for_drag_operation(_: &Object, _: Sel, _: id) {}
@@ -52,15 +53,15 @@ pub fn get_window_responder_class() -> *const Class {
                 use cocoa::foundation::NSString;
                 use std::ffi::CStr;
 
-                unsafe {
-                    let f = NSString::UTF8String(file);
-                    let path = CStr::from_ptr(f).to_string_lossy().into_owned();
+                let f = unsafe{ NSString::UTF8String(file) };
+                let path = unsafe { CStr::from_ptr(f).to_string_lossy().into_owned() };
 
-                    // let state: *mut c_void = *this.get_ivar("winitState");
-                    // let state = &mut *(state as *mut DelegateState);
-                    // emit_event(state, WindowEvent::DroppedFile(PathBuf::from(path)));
-                    println!("Dropped file: {:?}", PathBuf::from(path));
-                }
+                let view_controller: *mut c_void = unsafe { *this.get_ivar("ViewController") };
+                let view_controller = unsafe { &mut *(view_controller as *mut Controller) };
+                view_controller.on_file_drop(path);
+
+                // println!("Dropped file: {:?}", PathBuf::from(path));
+
             };
 
             YES
@@ -111,9 +112,9 @@ pub fn get_window_responder_class() -> *const Class {
 
         unsafe {
 
-            // decl.add_method(sel!(setViewController:),
-            //                 setViewController as
-            //                 extern "C" fn(this: &mut Object, _: Sel, _: *mut c_void));
+            decl.add_method(sel!(setViewController:),
+                            setViewController as
+                            extern "C" fn(this: &mut Object, _: Sel, _: *mut c_void));
 
             decl.add_method(sel!(acceptsFirstResponder),
                 acceptsFirstResponder as extern fn(this: &Object, _: Sel) -> BOOL);
