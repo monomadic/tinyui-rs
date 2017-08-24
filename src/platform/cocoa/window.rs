@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use cocoa::base::{ id, nil };
 use std::os::raw::c_void;
 
@@ -9,14 +11,16 @@ use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask,
 use Color;
 use Rect;
 
-pub struct Window<'cb> {
+pub struct Window {
     nswindow: id,
     nsview: id,
-    on_load_callback: Option<Box<FnMut() + 'cb>>,
-    events: WindowEvents,
+    events: Box<WindowEvents>,
 }
 
-pub struct WindowEvents {}
+pub struct WindowEvents {
+    pub title: String,
+    pub on_file_drop_callback: Option<Box<FnMut()>>,
+}
 
 impl WindowEvents {
     pub fn on_mouse_down(&mut self) {
@@ -25,15 +29,22 @@ impl WindowEvents {
 
     pub fn on_file_drop(&mut self, path: String) {
         println!("I droppperdd a file: {:?}", path);
+
+        // println!("title: {:?}", self.title);
+        // if let Some(ref mut callback) = self.on_file_drop_callback {
+        //     // callback();
+        //     // (callback)();
+        //     println!("some");
+        // }
     }
 }
 
 use ViewController;
 
-impl<'cb> Window<'cb> {
+impl Window {
 
     /// Create a new Window from scratch.
-    pub fn new(width: f64, height: f64) -> Result<Window<'cb>, String> {
+    pub fn new(width: f64, height: f64) -> Result<Window, String> {
 
         // callback();
 
@@ -46,11 +57,16 @@ impl<'cb> Window<'cb> {
 
         let view = unsafe { NSWindow::contentView(window) };
 
-        // set the responder class delegate
-        use platform::platform::responder::*;
-        let responder = unsafe { msg_send![get_window_responder_class(), new] };
+        let mut events = Box::new(WindowEvents{
+            title: "blorg".to_string(),
+            on_file_drop_callback: None,
+        });
 
-        let mut events = WindowEvents{};
+        if let Some(ref callback) = events.on_file_drop_callback {
+            println!("um it's some");
+        } else {
+            println!("ut's noe");
+        }
 
         unsafe {
             //            let _pool = NSAutoreleasePool::new(nil);
@@ -59,10 +75,6 @@ impl<'cb> Window<'cb> {
             window.makeKeyAndOrderFront_(nil);
             // window.setContentView_(view);
             window.makeFirstResponder_(view);
-            
-            NSView::addSubview_(view, responder);
-
-            msg_send![window, setDelegate:responder];
 
             let app = NSApp();
             app.setActivationPolicy_(NSApplicationActivationPolicyRegular);
@@ -80,22 +92,41 @@ impl<'cb> Window<'cb> {
                 registerForDraggedTypes:NSArray::arrayWithObject(nil, NSFilenamesPboardType)];
         }
 
-        let event_ptr: *mut WindowEvents = &mut events;
-        unsafe {
-            msg_send![responder, setViewController: event_ptr as *mut c_void];
-        }
-
-        Ok(Window {
+        let mut w = Window {
             nswindow: window,
             nsview: view,
-            on_load_callback: None,
             events: events,
-        })
+        };
+
+        // let void_ptr = event_ptr as *mut c_void;
+        // // let event_ptr: *mut c_void = unsafe { *this.get_ivar("ViewController") };
+        // let events: WindowEvents = unsafe { void_ptr as *mut WindowEvents };
+        // events.on_file_drop(path);
+
+        Ok(w)
     }
 
-    pub fn on_load(&mut self, callback: &'cb Fn()) {
-        self.on_load_callback = Some(Box::new(callback))
+    pub fn setup(&mut self) {
+        let event_ptr: *mut c_void = &mut self.events as *mut _ as *mut c_void;
+        println!("{:?}", event_ptr);
+
+        // set the responder class delegate
+        use platform::platform::responder::*;
+        let responder: id = unsafe { msg_send![get_window_responder_class(), new] };
+        
+        unsafe {
+            msg_send![responder, setViewController: event_ptr];
+            NSView::addSubview_(self.nsview, responder);
+            msg_send![self.nswindow, setDelegate:responder];
+        }
+
+        let e: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
+        println!("{:?}", (*e).title);
     }
+
+    // pub fn on_file_drop(&mut self, callback: &'cb Fn()) {
+    //     self.events.on_file_drop_callback = Some(Box::new(callback))
+    // }
 
     pub fn set_title(&mut self, title: &str) {
         unsafe {

@@ -57,9 +57,17 @@ pub fn get_window_responder_class() -> *const Class {
                 let f = unsafe{ NSString::UTF8String(file) };
                 let path = unsafe { CStr::from_ptr(f).to_string_lossy().into_owned() };
 
-                let view_controller: *mut c_void = unsafe { *this.get_ivar("ViewController") };
-                let view_controller = unsafe { &mut *(view_controller as *mut WindowEvents) };
-                view_controller.on_file_drop(path);
+                // let view_controller: *mut c_void = unsafe { *this.get_ivar("ViewController") };
+                // let mut view_controller = unsafe { &mut *(view_controller as *mut WindowEvents) };
+
+                let event_ptr: *mut c_void = unsafe { *this.get_ivar("ViewController") };
+                println!("{:?}", event_ptr);
+                // let events = unsafe { event_ptr as *mut Box<WindowEvents> };
+                // unsafe { (*events).on_file_drop(path) };
+
+                let events: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
+                println!("{:?}", (*events).title);
+                // (*events).on_file_drop(path);
 
                 // println!("Dropped file: {:?}", PathBuf::from(path));
 
