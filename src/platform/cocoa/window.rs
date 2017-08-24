@@ -28,14 +28,9 @@ impl WindowEvents {
     }
 
     pub fn on_file_drop(&mut self, path: String) {
-        println!("I droppperdd a file: {:?}", path);
-
-        // println!("title: {:?}", self.title);
-        // if let Some(ref mut callback) = self.on_file_drop_callback {
-        //     // callback();
-        //     // (callback)();
-        //     println!("some");
-        // }
+        if let Some(ref mut callback) = self.on_file_drop_callback {
+            callback();
+        }
     }
 }
 
@@ -124,9 +119,9 @@ impl Window {
         println!("{:?}", (*e).title);
     }
 
-    // pub fn on_file_drop(&mut self, callback: &'cb Fn()) {
-    //     self.events.on_file_drop_callback = Some(Box::new(callback))
-    // }
+    pub fn on_file_drop(&mut self, callback: Box<FnMut()>) {
+        self.events.on_file_drop_callback = Some(callback)
+    }
 
     pub fn set_title(&mut self, title: &str) {
         unsafe {

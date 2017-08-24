@@ -5,7 +5,7 @@ use tinyui::{ Label, Rect, Color, Button };
 // use std::path::PathBuf;
 
 fn main() {
-    let on_file_drop = || {
+    let on_file_drop = move|| {
         println!("on_file_drop!!!!!");
     };
 
@@ -20,7 +20,7 @@ fn main() {
     let mut button = Button::new("hello", Rect::new(30., 10., 150., 20.));
     button.attach(&mut window);
 
-    // window.on_file_drop(&on_file_drop);
     window.setup();
+    window.on_file_drop(Box::new(on_file_drop));
     window.run();
 }

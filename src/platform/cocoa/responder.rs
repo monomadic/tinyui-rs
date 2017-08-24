@@ -67,7 +67,7 @@ pub fn get_window_responder_class() -> *const Class {
 
                 let events: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
                 println!("{:?}", (*events).title);
-                // (*events).on_file_drop(path);
+                (*events).on_file_drop(path);
 
                 // println!("Dropped file: {:?}", PathBuf::from(path));
 
