@@ -1,0 +1,12 @@
+[package]
+name = "dd_overdrive_gui"
+version = "0.1.0"
+authors = ["Rob Saunders <rob@wearebrandnew.com>"]
+
+[dependencies]
+vst2 = { git = "https://github.com/rust-dsp/rust-vst" }
+tinyui = { path = "../../" }
+
+[lib]
+name = "dd_overdrive_gui"
+crate-type = ["cdylib"]

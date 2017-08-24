@@ -12,6 +12,15 @@ use Window;
 
 pub struct Button {
     id: id,
+    responder: id,
+}
+
+impl Drop for Button {
+    fn drop(&mut self) {
+        unsafe { msg_send![self.id, removeFromSuperview] };
+        unsafe { msg_send![self.id, release] };
+        unsafe { msg_send![self.responder, release] };
+    }
 }
 
 extern "C" fn onClick(this: &Object, _cmd: Sel, _: id) {
@@ -29,11 +38,12 @@ impl Button {
 
         let BUTTON_RESPONDER_CLASS = decl.register();
         let responder: id = unsafe { msg_send![BUTTON_RESPONDER_CLASS, new] };
+        
+        unsafe { msg_send![superclass, release] };
 
         unsafe {
             let button = NSButton::alloc(nil).initWithFrame_(position.to_nsrect());
             button.setTitle_(NSString::alloc(nil).init_str(text));
-
 
             msg_send![button, setTarget:responder];
             msg_send![button, setAction:sel!(onClick:)];
@@ -44,7 +54,7 @@ impl Button {
             // msg_send![button, setSelectable:NO];
             // msg_send![button, setStringValue:NSString::alloc(nil).init_str(text)];
 
-            Button { id: button }
+            Button { id: button, responder: responder }
         }
     }
 

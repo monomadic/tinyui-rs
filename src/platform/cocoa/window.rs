@@ -17,6 +17,12 @@ pub struct Window {
     events: Box<WindowEvents>,
 }
 
+impl Drop for Window {
+    fn drop(&mut self) {
+        unsafe { self.nsview.removeFromSuperview() };
+    }
+}
+
 pub struct WindowEvents {
     pub on_file_drop_callback: Option<Box<FnMut(String)>>,
 }
@@ -77,18 +83,11 @@ impl Window {
                 registerForDraggedTypes:NSArray::arrayWithObject(nil, NSFilenamesPboardType)];
         }
 
-        let mut w = Window {
+        Ok(Window {
             nswindow: window,
             nsview: view,
             events: events,
-        };
-
-        // let void_ptr = event_ptr as *mut c_void;
-        // // let event_ptr: *mut c_void = unsafe { *this.get_ivar("ViewController") };
-        // let events: WindowEvents = unsafe { void_ptr as *mut WindowEvents };
-        // events.on_file_drop(path);
-
-        Ok(w)
+        })
     }
 
     pub fn setup(&mut self) {
@@ -141,26 +140,34 @@ impl Window {
         Rect::from_nsrect(unsafe { NSWindow::frame(self.nswindow) })
     }
 
-//    /// Attach a Window class to an existing window.
-//    pub fn attach(host_nsview: *mut c_void) -> Result<Window, String> {
-//        let host_window = unsafe { msg_send![host_nsview as id, window] };
-//
-//        Ok(Window {
-//            nswindow: host_window,
-//            nsview: host_nsview as id,
-//        })
-//    }
+   /// Attach a Window class to an existing window.
+   pub fn attach_to(host_nsview: *mut c_void) -> Result<Window, String> {
+        let host_window = unsafe { msg_send![host_nsview as id, window] };
+        // let host_nsview = unsafe { NSWindow::contentView(host_window) };
 
-//    unsafe fn prepare_for_display(&mut window: Window) {
-//        // self.view.set_wants_best_resolution_opengl_surface(YES);
-//
-//        msg_send![self.nswindow, setAcceptsMouseMovedEvents: YES];
-//        msg_send![self.nswindow, makeKeyAndOrderFront: nil];
-//        msg_send![self.nswindow, setContentView: self.nsview];
-//        msg_send![self.nswindow, makeFirstResponder: self.nsview];
-//        msg_send![self.nswindow, center];
-//
-//        // need to [NSApp activateIgnoringOtherApps:YES]; and find out what it does.
-//    }
+        let child_nsview = unsafe { NSView::alloc(nil) };
+        let child_view = unsafe { child_nsview.initWithFrame_(NSView::frame(host_nsview as id)) };
+        unsafe { NSView::addSubview_((host_nsview as id), child_view) }
+
+        Ok(Window {
+            events: Box::new(WindowEvents{
+                on_file_drop_callback: None,
+            }),
+            nswindow: host_window,
+            nsview: host_nsview as id,
+        })
+   }
+
+   // unsafe fn prepare_for_display(&mut window: Window) {
+   //     // self.view.set_wants_best_resolution_opengl_surface(YES);
+
+   //     msg_send![self.nswindow, setAcceptsMouseMovedEvents: YES];
+   //     msg_send![self.nswindow, makeKeyAndOrderFront: nil];
+   //     msg_send![self.nswindow, setContentView: self.nsview];
+   //     msg_send![self.nswindow, makeFirstResponder: self.nsview];
+   //     msg_send![self.nswindow, center];
+
+   //     // need to [NSApp activateIgnoringOtherApps:YES]; and find out what it does.
+   // }
 
 }

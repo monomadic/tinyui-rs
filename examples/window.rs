@@ -22,5 +22,5 @@ fn main() {
         label.set_text(&path);
     }));
 
-    window.run();
+    window.run(); // not necessary on vsts.
 }

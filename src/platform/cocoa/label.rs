@@ -8,6 +8,12 @@ pub struct Label {
     id: id,
 }
 
+impl Drop for Label {
+    fn drop(&mut self) {
+        unsafe { msg_send![self.id, removeFromSuperview] };
+    }
+}
+
 impl Label {
     pub fn new(text: &str, position: Rect) -> Self {
         unsafe {
