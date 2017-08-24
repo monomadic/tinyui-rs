@@ -13,18 +13,27 @@ pub struct Window<'cb> {
     nswindow: id,
     nsview: id,
     on_load_callback: Option<Box<FnMut() + 'cb>>,
+    events: WindowEvents,
 }
 
-//impl Drop for Window {
-//
-//}
+pub struct WindowEvents {}
+
+impl WindowEvents {
+    pub fn on_mouse_down(&mut self) {
+        println!("Yaaaas!!");
+    }
+
+    pub fn on_file_drop(&mut self, path: String) {
+        println!("I droppperdd a file: {:?}", path);
+    }
+}
 
 use ViewController;
 
 impl<'cb> Window<'cb> {
 
     /// Create a new Window from scratch.
-    pub fn new<T:ViewController>(width: f64, height: f64, controller: *mut T) -> Result<Window<'cb>, String> {
+    pub fn new(width: f64, height: f64) -> Result<Window<'cb>, String> {
 
         // callback();
 
@@ -40,6 +49,8 @@ impl<'cb> Window<'cb> {
         // set the responder class delegate
         use platform::platform::responder::*;
         let responder = unsafe { msg_send![get_window_responder_class(), new] };
+
+        let mut events = WindowEvents{};
 
         unsafe {
             //            let _pool = NSAutoreleasePool::new(nil);
@@ -69,14 +80,16 @@ impl<'cb> Window<'cb> {
                 registerForDraggedTypes:NSArray::arrayWithObject(nil, NSFilenamesPboardType)];
         }
 
+        let event_ptr: *mut WindowEvents = &mut events;
         unsafe {
-            msg_send![responder, setViewController: controller as *mut c_void];
+            msg_send![responder, setViewController: event_ptr as *mut c_void];
         }
 
         Ok(Window {
             nswindow: window,
             nsview: view,
             on_load_callback: None,
+            events: events,
         })
     }
 

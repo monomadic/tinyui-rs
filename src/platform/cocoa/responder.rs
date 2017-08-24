@@ -13,6 +13,7 @@ use std::os::raw::c_void;
 
 // use window::view_controller::*;
 use {Controller, ViewController};
+use platform::platform::window::WindowEvents;
 
 pub fn get_window_responder_class() -> *const Class {
 
@@ -57,7 +58,7 @@ pub fn get_window_responder_class() -> *const Class {
                 let path = unsafe { CStr::from_ptr(f).to_string_lossy().into_owned() };
 
                 let view_controller: *mut c_void = unsafe { *this.get_ivar("ViewController") };
-                let view_controller = unsafe { &mut *(view_controller as *mut Controller) };
+                let view_controller = unsafe { &mut *(view_controller as *mut WindowEvents) };
                 view_controller.on_file_drop(path);
 
                 // println!("Dropped file: {:?}", PathBuf::from(path));
