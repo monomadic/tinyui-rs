@@ -24,6 +24,10 @@ impl Label {
         }
     }
 
+    pub fn set_text(&mut self, text: &str) {
+        unsafe { self.id.setStringValue_(NSString::alloc(nil).init_str(text)) };
+    }
+
     pub fn attach(&mut self, window: &mut Window) {
         window.add_subview(self.id);
     }
