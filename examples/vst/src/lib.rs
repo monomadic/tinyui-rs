@@ -13,7 +13,7 @@ use tinyui::{ Label, Rect, Color, Button };
 struct DigiDist {
     threshold: f32,
     gain: f32,
-    window: Option<PluginWindow>,
+    app: Option<PluginWindow>,
 }
 
 struct PluginWindow {
@@ -27,7 +27,7 @@ impl Default for DigiDist {
         DigiDist {
             threshold: 1.0, // VST parameters are always 0.0 to 1.0
             gain: 1.0,
-            window: None,
+            app: None,
         }
     }
 }
@@ -35,7 +35,8 @@ impl Default for DigiDist {
 impl Editor for DigiDist {
     fn size(&self) -> (i32, i32) { (200, 100) }
     fn position(&self) -> (i32, i32) { (0, 0) }
-    fn is_open(&mut self) -> bool { self.window.is_some() }
+    fn is_open(&mut self) -> bool { self.app.is_some() }
+    fn close(&mut self) { self.app = None }
 
     fn open(&mut self, window: *mut std::os::raw::c_void) {
         let mut w = Window::attach_to(window).unwrap();
@@ -51,10 +52,10 @@ impl Editor for DigiDist {
         button.attach(&mut w);
 
         w.setup();
-        // w.on_file_drop(Box::new(move|path| {
-        //     // println!("file got dropped bro: {:?}", path);
-        //     label.set_text(&path);
-        // }));
+        w.on_file_drop(Box::new(|path| {
+            // println!("file got dropped bro: {:?}", path);
+            label.set_text(&path);
+        }));
 
         self.window = Some(PluginWindow {
             window: w,
@@ -63,7 +64,6 @@ impl Editor for DigiDist {
         });
     }
 
-    fn close(&mut self) { self.window = None }
 }
 
 impl Plugin for DigiDist {
