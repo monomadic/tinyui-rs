@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 #[macro_use] extern crate vst2;
 
 use vst2::buffer::AudioBuffer;
@@ -17,7 +19,7 @@ struct DigiDist {
 struct PluginWindow {
     window: Window,
     label: Label,
-    // button: Button,
+    button: Button,
 }
 
 impl Default for DigiDist {
@@ -45,10 +47,10 @@ impl Editor for DigiDist {
         let mut label = Label::new("hello", Rect::new(10., 10., 300., 20.));
         label.attach(&mut w);
 
-        // let mut button = Button::new("hello", Rect::new(30., 10., 150., 20.));
-        // button.attach(&mut w);
+        let mut button = Button::new("hello", Rect::new(30., 10., 150., 20.));
+        button.attach(&mut w);
 
-        // w.setup();
+        w.setup();
         // w.on_file_drop(Box::new(move|path| {
         //     // println!("file got dropped bro: {:?}", path);
         //     label.set_text(&path);
@@ -57,7 +59,7 @@ impl Editor for DigiDist {
         self.window = Some(PluginWindow {
             window: w,
             label: label,
-            // button: button,
+            button: button,
         });
     }
 

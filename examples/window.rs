@@ -13,8 +13,8 @@ fn main() {
     let mut label = Label::new("hello", Rect::new(10., 10., 300., 20.));
     label.attach(&mut window);
 
-    // let mut button = Button::new("hello", Rect::new(30., 10., 150., 20.));
-    // button.attach(&mut window);
+    let mut button = Button::new("hello", Rect::new(30., 10., 150., 20.));
+    button.attach(&mut window);
 
     window.setup();
     window.on_file_drop(Box::new(move|path| {

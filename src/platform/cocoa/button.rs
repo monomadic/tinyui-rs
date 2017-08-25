@@ -3,8 +3,8 @@
 #![allow(unused_imports)]
 
 use cocoa::base::{ id, nil, NO };
-use cocoa::appkit::NSButton;
-use cocoa::foundation::{ NSString };
+use cocoa::appkit::{ NSButton };
+use cocoa::foundation::{ NSString, NSAutoreleasePool };
 use objc::runtime::{Class, Object, Sel};
 use objc::declare::ClassDecl;
 use Rect;
@@ -12,49 +12,47 @@ use Window;
 
 pub struct Button {
     id: id,
-    responder: id,
 }
 
 impl Drop for Button {
     fn drop(&mut self) {
         unsafe { msg_send![self.id, removeFromSuperview] };
         unsafe { msg_send![self.id, release] };
-        unsafe { msg_send![self.responder, release] };
     }
 }
 
 extern "C" fn onClick(this: &Object, _cmd: Sel, _: id) {
-    // unsafe { this.set_ivar::<u32>("_foo", bar) ;}
     println!("clicked");
 }
 
 impl Button {
     pub fn new(text: &str, position: Rect) -> Self {
-        let superclass = Class::get("NSObject").unwrap();
-        let mut decl = ClassDecl::new("ButtonResponder", superclass).unwrap();
+        // singleton class definition
+        use std::sync::{Once, ONCE_INIT};
+        static mut RESPONDER_CLASS: *const Class = 0 as *const Class;
 
-        unsafe { decl.add_method(sel!(onClick:),
-            onClick as extern fn(this: &Object, _: Sel, _: id)) };
+        static INIT: Once = ONCE_INIT;
 
-        let BUTTON_RESPONDER_CLASS = decl.register();
-        let responder: id = unsafe { msg_send![BUTTON_RESPONDER_CLASS, new] };
-        
-        unsafe { msg_send![superclass, release] };
+        INIT.call_once(|| unsafe {
+            let superclass = Class::get("NSObject").unwrap();
+            let mut decl = ClassDecl::new("ButtonResponder", superclass).unwrap();
+
+            decl.add_method(sel!(onClick:),
+                onClick as extern fn(this: &Object, _: Sel, _: id));
+
+            RESPONDER_CLASS = decl.register();
+        });
 
         unsafe {
+            let responder: id = msg_send![RESPONDER_CLASS, new];
+
             let button = NSButton::alloc(nil).initWithFrame_(position.to_nsrect());
             button.setTitle_(NSString::alloc(nil).init_str(text));
 
             msg_send![button, setTarget:responder];
             msg_send![button, setAction:sel!(onClick:)];
 
-            // msg_send![button, setBezeled:NO];
-            // msg_send![button, setDrawsBackground:NO];
-            // msg_send![button, setEditable:NO];
-            // msg_send![button, setSelectable:NO];
-            // msg_send![button, setStringValue:NSString::alloc(nil).init_str(text)];
-
-            Button { id: button, responder: responder }
+            Button { id: button }
         }
     }
 
