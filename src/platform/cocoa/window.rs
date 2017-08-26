@@ -2,6 +2,7 @@
 
 use cocoa::base::{ id, nil };
 use std::os::raw::c_void;
+use std::cell::RefCell;
 
 use cocoa::base::{ NO, YES };
 use cocoa::foundation::{ NSString, NSRect, NSSize, NSPoint, NSAutoreleasePool };
@@ -17,14 +18,14 @@ pub struct Window {
     events: Box<WindowEvents>,
 }
 
+pub struct WindowEvents {
+    pub on_file_drop_callback: Option<RefCell<Box<FnMut(String)>>>,
+}
+
 impl Drop for Window {
     fn drop(&mut self) {
         unsafe { self.nsview.removeFromSuperview() };
     }
-}
-
-pub struct WindowEvents {
-    pub on_file_drop_callback: Option<Box<FnMut(String)>>,
 }
 
 impl WindowEvents {
@@ -34,7 +35,8 @@ impl WindowEvents {
 
     pub fn on_file_drop(&mut self, path: String) {
         if let Some(ref mut callback) = self.on_file_drop_callback {
-            callback(path);
+            let ref mut file_drop = *(callback.borrow_mut());
+            file_drop(path);
         }
     }
 }
@@ -107,10 +109,6 @@ impl Window {
         // println!("{:?}", (*e).title);
     }
 
-    pub fn on_file_drop(&mut self, callback: Box<FnMut(String)>) {
-        self.events.on_file_drop_callback = Some(callback)
-    }
-
     pub fn set_title(&mut self, title: &str) {
         unsafe {
             let nstitle = NSString::alloc(nil).init_str(title);
@@ -157,6 +155,10 @@ impl Window {
             nsview: host_nsview as id,
         })
    }
+
+    pub fn on_file_drop(&mut self, callback: RefCell<Box<FnMut(String)>>) {
+        self.events.on_file_drop_callback = Some(callback)
+    }
 
    // unsafe fn prepare_for_display(&mut window: Window) {
    //     // self.view.set_wants_best_resolution_opengl_surface(YES);

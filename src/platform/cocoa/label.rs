@@ -4,15 +4,16 @@ use cocoa::foundation::{ NSString };
 use Rect;
 use Window;
 
+#[derive(Copy, Clone)]
 pub struct Label {
     id: id,
 }
 
-impl Drop for Label {
-    fn drop(&mut self) {
-        unsafe { msg_send![self.id, removeFromSuperview] };
-    }
-}
+// impl Drop for Label {
+//     fn drop(&mut self) {
+//         unsafe { msg_send![self.id, removeFromSuperview] };
+//     }
+// }
 
 impl Label {
     pub fn new(text: &str, position: Rect) -> Self {

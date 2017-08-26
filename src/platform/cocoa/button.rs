@@ -10,50 +10,94 @@ use objc::declare::ClassDecl;
 use Rect;
 use Window;
 
+use std::cell::RefCell;
+use std::os::raw::c_void;
+
 pub struct Button {
     id: id,
+    responder: id,
+    on_click_callback: Option<Box<FnMut()>>,
 }
 
-impl Drop for Button {
-    fn drop(&mut self) {
-        unsafe { msg_send![self.id, removeFromSuperview] };
-        unsafe { msg_send![self.id, release] };
+impl Button {
+    fn click(&mut self) {
+        // println!("{:?}", self.title);
+        println!("hi");
+        if let Some(ref mut callback) = self.on_click_callback {
+            callback();
+            // let ref mut click = *(callback.borrow_mut());
+            // click();
+        }
     }
 }
 
-extern "C" fn onClick(this: &Object, _cmd: Sel, _: id) {
-    println!("clicked");
+extern "C" fn onButtonClick(this: &Object, _cmd: Sel, target: id) {
+    println!("cli");
+    // unsafe { msg_send![target, setTitle:NSString::alloc(nil).init_str("clicked")]};
+
+    let event_ptr: *mut c_void = unsafe { *this.get_ivar("ViewController") };
+    let events: &mut Button = unsafe { &mut *(event_ptr as *mut Button) };
+
+    events.click();
+}
+
+extern "C" fn setViewController(this: &mut Object, _: Sel, controller: *mut c_void) {
+    unsafe { this.set_ivar("ViewController", controller) };
 }
 
 impl Button {
     pub fn new(text: &str, position: Rect) -> Self {
+        
         // singleton class definition
         use std::sync::{Once, ONCE_INIT};
         static mut RESPONDER_CLASS: *const Class = 0 as *const Class;
-
         static INIT: Once = ONCE_INIT;
 
         INIT.call_once(|| unsafe {
             let superclass = Class::get("NSObject").unwrap();
             let mut decl = ClassDecl::new("ButtonResponder", superclass).unwrap();
 
-            decl.add_method(sel!(onClick:),
-                onClick as extern fn(this: &Object, _: Sel, _: id));
+            decl.add_ivar::<*mut c_void>("ViewController");
+
+            decl.add_method(sel!(setViewController:),
+                setViewController as
+                extern "C" fn(this: &mut Object, _: Sel, _: *mut c_void));
+
+            decl.add_method(sel!(onButtonClick:),
+                onButtonClick as extern fn(this: &Object, _: Sel, _: id));
 
             RESPONDER_CLASS = decl.register();
         });
 
-        unsafe {
-            let responder: id = msg_send![RESPONDER_CLASS, new];
+        // let events = Box::new(ButtonEvents{
+        //     on_click_callback: None,
+        //     title: "hihihi".to_string(),
+        // });
+
+        let responder: id = unsafe { msg_send![RESPONDER_CLASS, new] };
+        let button = unsafe {
 
             let button = NSButton::alloc(nil).initWithFrame_(position.to_nsrect());
             button.setTitle_(NSString::alloc(nil).init_str(text));
 
             msg_send![button, setTarget:responder];
-            msg_send![button, setAction:sel!(onClick:)];
+            msg_send![button, setAction:sel!(onButtonClick:)];
 
-            Button { id: button }
-        }
+            Button { id: button, responder: responder, on_click_callback: None }
+        };
+
+        button
+    }
+
+    pub fn on_click(&mut self, callback: Box<FnMut()>) {
+        self.on_click_callback = Some(callback);
+
+        let button_ptr: *mut c_void = self as *mut _ as *mut c_void;
+        unsafe { msg_send![self.responder, setViewController: button_ptr] };
+    }
+
+    pub fn set_text(&mut self, text: &str) {
+        unsafe { self.id.setTitle_(NSString::alloc(nil).init_str(text)) };
     }
 
     pub fn attach(&mut self, window: &mut Window) {

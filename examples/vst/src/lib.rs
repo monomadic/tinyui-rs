@@ -13,7 +13,7 @@ use tinyui::{ Label, Rect, Color, Button };
 struct DigiDist {
     threshold: f32,
     gain: f32,
-    app: Option<PluginWindow>,
+    app: Option<Window>,
 }
 
 struct PluginWindow {
@@ -39,29 +39,35 @@ impl Editor for DigiDist {
     fn close(&mut self) { self.app = None }
 
     fn open(&mut self, window: *mut std::os::raw::c_void) {
-        let mut w = Window::attach_to(window).unwrap();
+        let mut window = Window::attach_to(window).unwrap();
 
         // window.on_load(&on_load);
-        w.set_title("oh hai!");
-        w.set_background_color(Color::green());
+        window.set_title("oh hai!");
+        window.set_background_color(Color::green());
 
         let mut label = Label::new("hello", Rect::new(10., 10., 300., 20.));
-        label.attach(&mut w);
+        label.attach(&mut window);
 
         let mut button = Button::new("hello", Rect::new(30., 10., 150., 20.));
-        button.attach(&mut w);
+        button.attach(&mut window);
 
-        w.setup();
-        w.on_file_drop(Box::new(|path| {
-            // println!("file got dropped bro: {:?}", path);
+        window.setup();
+
+        button.on_click(Box::new(move || {
+            label.set_text("hi");
+        }));
+
+        let on_file_drop = std::cell::RefCell::new(Box::new(move |path:String| {
+            println!("file got dropped bro: {:?}", path);
+            button.set_text("dropper");
             label.set_text(&path);
         }));
 
-        self.window = Some(PluginWindow {
-            window: w,
-            label: label,
-            button: button,
-        });
+        window.on_file_drop(on_file_drop);
+
+        // window.run();
+
+        self.app = Some(window);
     }
 
 }
