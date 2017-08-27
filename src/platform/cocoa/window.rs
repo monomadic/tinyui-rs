@@ -103,15 +103,15 @@ impl Window {
             msg_send![responder, setViewController: event_ptr];
             NSView::addSubview_(self.nsview, responder);
             msg_send![self.nswindow, setDelegate:responder];
-
-            // make resizable
-            self.nswindow.setStyleMask_(self.nswindow.styleMask() | NSResizableWindowMask);
         }
-
-        // NSResizableWindowMask
 
         // let e: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
         // println!("{:?}", (*e).title);
+    }
+
+    pub fn make_resizable(&mut self) {
+        // make resizable
+        unsafe { self.nswindow.setStyleMask_(self.nswindow.styleMask() | NSResizableWindowMask) };
     }
 
     pub fn set_title(&mut self, title: &str) {

@@ -10,6 +10,9 @@ extern crate tinyui;
 use tinyui::Window;
 use tinyui::{ WebView, Label, Rect, Color, Button };
 
+const WIDTH: f64 = 480.;
+const HEIGHT: f64 = 320.;
+
 struct DigiDist {
     threshold: f32,
     gain: f32,
@@ -25,8 +28,8 @@ struct PluginWindow {
 
 impl Default for DigiDist {
     fn default() -> DigiDist {
-        let mut ui = WebView::new(Rect::new(0., 0., 640., 480.));
-        ui.load_html_string(include_str!("index.html"));
+        let mut ui = WebView::new(Rect::new(0., 0., WIDTH, HEIGHT));
+        ui.load_html_string(include_str!("knob.html"));
 
         DigiDist {
             threshold: 1.0, // VST parameters are always 0.0 to 1.0
@@ -38,7 +41,7 @@ impl Default for DigiDist {
 }
 
 impl Editor for DigiDist {
-    fn size(&self) -> (i32, i32) { (640, 480) }
+    fn size(&self) -> (i32, i32) { (WIDTH as i32, HEIGHT as i32) }
     fn position(&self) -> (i32, i32) { (0, 0) }
     fn is_open(&mut self) -> bool { self.app.is_some() }
     fn close(&mut self) { self.app = None }
@@ -48,7 +51,7 @@ impl Editor for DigiDist {
 
         // window.on_load(&on_load);
         window.set_title("oh hai!");
-        window.set_background_color(Color::green());
+        // window.set_background_color(Color::green());
 
         let mut label = Label::new("hello", Rect::new(10., 10., 300., 20.));
         label.attach(&mut window);

@@ -20,11 +20,14 @@ use tinyui::{ Label, Rect, Color, Button, WebView };
 //     }
 // }
 
+const WIDTH: f64 = 480.;
+const HEIGHT: f64 = 320.;
+
 fn main() {
     // let mut app = App::new();
     // app.window.run();
 
-    let mut window = Window::new(640., 480.).unwrap();
+    let mut window = Window::new(WIDTH, HEIGHT).unwrap();
     // window.on_load(&on_load);
     window.set_title("oh hai!");
     window.set_background_color(Color::black());
@@ -36,7 +39,7 @@ fn main() {
     button.attach(&mut window);
 
     let mut webview = WebView::new(window.frame());
-    webview.load_html_string(include_str!("vst/src/index.html"));
+    webview.load_html_string(include_str!("vst/src/knob.html"));
     webview.attach(&mut window);
 
     button.on_click(Some(Box::new(

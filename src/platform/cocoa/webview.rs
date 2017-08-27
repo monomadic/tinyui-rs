@@ -38,6 +38,10 @@ impl WebView {
         }
     }
 
+    pub fn set_size(&mut self, html: &str) {
+        unsafe { msg_send![self.id, isLoading] }
+    }
+
     pub fn is_loading(&mut self, html: &str) -> bool {
         unsafe { msg_send![self.id, isLoading] }
     }
