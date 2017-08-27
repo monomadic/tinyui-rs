@@ -8,7 +8,7 @@ use vst2::editor::Editor;
 
 extern crate tinyui;
 use tinyui::Window;
-use tinyui::{ Label, Rect, Color, Button };
+use tinyui::{ WebView, Label, Rect, Color, Button };
 
 struct DigiDist {
     threshold: f32,
@@ -33,7 +33,7 @@ impl Default for DigiDist {
 }
 
 impl Editor for DigiDist {
-    fn size(&self) -> (i32, i32) { (200, 100) }
+    fn size(&self) -> (i32, i32) { (640, 480) }
     fn position(&self) -> (i32, i32) { (0, 0) }
     fn is_open(&mut self) -> bool { self.app.is_some() }
     fn close(&mut self) { self.app = None }
@@ -53,17 +53,28 @@ impl Editor for DigiDist {
 
         window.setup();
 
-        button.on_click(Box::new(move || {
-            label.set_text("hi");
-        }));
+        // button.on_click(Box::new(move || {
+        //     label.set_text("hi");
+        // }));
 
-        let on_file_drop = std::cell::RefCell::new(Box::new(move |path:String| {
-            println!("file got dropped bro: {:?}", path);
-            button.set_text("dropper");
-            label.set_text(&path);
-        }));
+        // let on_file_drop = std::cell::RefCell::new(Box::new(move |path:String| {
+        //     println!("file got dropped bro: {:?}", path);
+        //     button.set_text("dropper");
+        //     label.set_text(&path);
+        // }));
 
-        window.on_file_drop(on_file_drop);
+        let mut webview = WebView::new(Rect::new(10., 10., 600., 400.));
+        webview.load_html_string("<div style='background-color: #F33;'><h1>HAgHAFUCK U</h1><button style='width: 150px'>PRESS ME</button></div>");
+        webview.attach(&mut window);
+
+        button.on_click(Some(Box::new(
+            move |button| {
+                label.set_text("hi");
+                button.set_text("hi");
+            }
+        )));
+
+        // window.on_file_drop(on_file_drop);
 
         // window.run();
 

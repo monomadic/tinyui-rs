@@ -24,7 +24,7 @@ fn main() {
     // let mut app = App::new();
     // app.window.run();
 
-    let mut window = Window::new(275., 150.).unwrap();
+    let mut window = Window::new(640., 480.).unwrap();
     // window.on_load(&on_load);
     window.set_title("oh hai!");
     window.set_background_color(Color::green());
@@ -35,9 +35,8 @@ fn main() {
     let mut button = Button::new("hello", Rect::new(180., 50., 60., 20.));
     button.attach(&mut window);
 
-    window.setup();
-
-    let mut webview = WebView::new(Rect::new(0., 0., 150., 150.));
+    let mut webview = WebView::new(Rect::new(10., 10., 600., 400.));
+    webview.load_html_string("<h1>HAHAFUCK U</h1><button style='width: 150px'>PRESS ME</button>");
     webview.attach(&mut window);
 
     button.on_click(Some(Box::new(
@@ -52,6 +51,7 @@ fn main() {
         label.set_text(&path);
     }));
     window.on_file_drop(on_file_drop);
+    window.setup();
 
     window.run(); // not necessary on vsts.
 }
