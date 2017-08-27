@@ -13,8 +13,8 @@ use Color;
 use Rect;
 
 pub struct Window {
-    nswindow: id,
-    nsview: id,
+    pub nswindow: id,
+    pub nsview: id,
     events: Box<WindowEvents>,
 }
 

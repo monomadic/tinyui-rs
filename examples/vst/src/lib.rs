@@ -26,7 +26,7 @@ struct PluginWindow {
 impl Default for DigiDist {
     fn default() -> DigiDist {
         let mut ui = WebView::new(Rect::new(0., 0., 640., 480.));
-        ui.load_html_string("<script>function changeBackground(color) {document.body.style.background = color;}</script><BODY onload=\"changeBackground('green');\"><h1>HAHAFUCK U</h1><button style='width: 150px'>PRESS ME</button></BODY>");
+        ui.load_html_string(include_str!("index.html"));
 
         DigiDist {
             threshold: 1.0, // VST parameters are always 0.0 to 1.0

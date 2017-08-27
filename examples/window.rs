@@ -27,7 +27,7 @@ fn main() {
     let mut window = Window::new(640., 480.).unwrap();
     // window.on_load(&on_load);
     window.set_title("oh hai!");
-    window.set_background_color(Color::green());
+    window.set_background_color(Color::black());
 
     let mut label = Label::new("hello", Rect::new(10., 10., 300., 20.));
     label.attach(&mut window);
@@ -36,7 +36,7 @@ fn main() {
     button.attach(&mut window);
 
     let mut webview = WebView::new(window.frame());
-    webview.load_html_string("<script>function changeBackground(color) {document.body.style.background = color;}</script><BODY style='background-color: red' onload=\"changeBackground('green');\"><h1>HAHAFUCK U</h1><button style='width: 150px'>PRESS ME</button></BODY>");
+    webview.load_html_string(include_str!("vst/src/index.html"));
     webview.attach(&mut window);
 
     button.on_click(Some(Box::new(
