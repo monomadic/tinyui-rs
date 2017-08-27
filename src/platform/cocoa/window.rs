@@ -140,7 +140,11 @@ impl Window {
     }
 
     pub fn frame(&self) -> Rect {
-        Rect::from_nsrect(unsafe { NSWindow::frame(self.nswindow) })
+        Rect::from_nsrect(unsafe { NSView::frame(self.nsview) })
+    }
+
+    pub fn bounds(&self) -> Rect {
+        Rect::from_nsrect(unsafe { NSView::bounds(self.nsview) })
     }
 
    /// Attach a Window class to an existing window.

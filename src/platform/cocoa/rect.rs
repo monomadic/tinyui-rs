@@ -1,15 +1,18 @@
 use cocoa::foundation::{ NSRect, NSPoint, NSSize };
 
+#[derive(Copy, Clone, Debug)]
 pub struct Rect {
     origin: Point,
     size: Size,
 }
 
+#[derive(Copy, Clone, Debug)]
 pub struct Point {
     x: f64,
     y: f64,
 }
 
+#[derive(Copy, Clone, Debug)]
 pub struct Size {
     width: f64,
     height: f64,

@@ -25,7 +25,7 @@ struct PluginWindow {
 
 impl Default for DigiDist {
     fn default() -> DigiDist {
-        let mut ui = WebView::new(Rect::new(10., 10., 600., 400.));
+        let mut ui = WebView::new(Rect::new(0., 0., 640., 480.));
         ui.load_html_string("<script>function changeBackground(color) {document.body.style.background = color;}</script><BODY onload=\"changeBackground('green');\"><h1>HAHAFUCK U</h1><button style='width: 150px'>PRESS ME</button></BODY>");
 
         DigiDist {

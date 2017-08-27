@@ -35,8 +35,8 @@ fn main() {
     let mut button = Button::new("hello", Rect::new(180., 50., 60., 20.));
     button.attach(&mut window);
 
-    let mut webview = WebView::new(Rect::new(10., 10., 600., 400.));
-    webview.load_html_string("<script>function changeBackground(color) {document.body.style.background = color;}</script><BODY onload=\"changeBackground('green');\"><h1>HAHAFUCK U</h1><button style='width: 150px'>PRESS ME</button></BODY>");
+    let mut webview = WebView::new(window.frame());
+    webview.load_html_string("<script>function changeBackground(color) {document.body.style.background = color;}</script><BODY style='background-color: red' onload=\"changeBackground('green');\"><h1>HAHAFUCK U</h1><button style='width: 150px'>PRESS ME</button></BODY>");
     webview.attach(&mut window);
 
     button.on_click(Some(Box::new(
