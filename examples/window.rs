@@ -1,6 +1,6 @@
 extern crate tinyui;
 use tinyui::Window;
-use tinyui::{ Label, Rect, Color, Button };
+use tinyui::{ Label, Rect, Color, Button, WebView };
 
 // use std::path::PathBuf;
 
@@ -32,14 +32,17 @@ fn main() {
     let mut label = Label::new("hello", Rect::new(10., 10., 300., 20.));
     label.attach(&mut window);
 
-    let mut button = Button::new("hello", Rect::new(30., 10., 150., 20.));
+    let mut button = Button::new("hello", Rect::new(180., 50., 60., 20.));
     button.attach(&mut window);
 
     window.setup();
 
+    let mut webview = WebView::new(Rect::new(0., 0., 150., 150.));
+    webview.attach(&mut window);
+
     button.on_click(Some(Box::new(
-        |button| {
-            // label.set_text("hi");
+        move |button| {
+            label.set_text("hi");
             button.set_text("hi");
         }
     )));

@@ -5,7 +5,7 @@
 use cocoa::base::{ id, nil, NO };
 use cocoa::appkit::{ NSButton };
 use cocoa::foundation::{ NSString, NSAutoreleasePool };
-use objc::runtime::{Class, Object, Sel};
+use objc::runtime::{ Class, Object, Sel };
 use objc::declare::ClassDecl;
 use Rect;
 use Window;

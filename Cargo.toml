@@ -5,6 +5,7 @@ authors = ["Rob Saunders <rob@wearebrandnew.com>"]
 
 [lib]
 name="tinyui"
+crate-type = ["rlib"]
 
 [dependencies]
 objc = "0.2"
