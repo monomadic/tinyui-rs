@@ -14,6 +14,7 @@ struct DigiDist {
     threshold: f32,
     gain: f32,
     app: Option<Window>,
+    ui: WebView,
 }
 
 struct PluginWindow {
@@ -24,10 +25,14 @@ struct PluginWindow {
 
 impl Default for DigiDist {
     fn default() -> DigiDist {
+        let mut ui = WebView::new(Rect::new(10., 10., 600., 400.));
+        ui.load_html_string("<script>function changeBackground(color) {document.body.style.background = color;}</script><BODY onload=\"changeBackground('green');\"><h1>HAHAFUCK U</h1><button style='width: 150px'>PRESS ME</button></BODY>");
+
         DigiDist {
             threshold: 1.0, // VST parameters are always 0.0 to 1.0
             gain: 1.0,
             app: None,
+            ui: ui,
         }
     }
 }
@@ -51,7 +56,8 @@ impl Editor for DigiDist {
         let mut button = Button::new("hello", Rect::new(30., 10., 150., 20.));
         button.attach(&mut window);
 
-        window.setup();
+        // let mut webview = WebView::new(Rect::new(10., 10., 600., 400.));
+        // self.ui.load_html_string("<script>function changeBackground(color) {document.body.style.background = color;}</script><BODY onload=\"changeBackground('green');\"><h1>HAHAFUCK U</h1><button style='width: 150px'>PRESS ME</button></BODY>");
 
         // button.on_click(Box::new(move || {
         //     label.set_text("hi");
@@ -63,9 +69,7 @@ impl Editor for DigiDist {
         //     label.set_text(&path);
         // }));
 
-        let mut webview = WebView::new(Rect::new(10., 10., 600., 400.));
-        webview.load_html_string("<div style='background-color: #F33;'><h1>HAgHAFUCK U</h1><button style='width: 150px'>PRESS ME</button></div>");
-        webview.attach(&mut window);
+        self.ui.attach(&mut window);
 
         button.on_click(Some(Box::new(
             move |button| {
@@ -77,7 +81,7 @@ impl Editor for DigiDist {
         // window.on_file_drop(on_file_drop);
 
         // window.run();
-
+        window.setup();
         self.app = Some(window);
     }
 

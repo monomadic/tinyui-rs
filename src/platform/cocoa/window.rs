@@ -6,7 +6,7 @@ use std::cell::RefCell;
 
 use cocoa::base::{ NO, YES };
 use cocoa::foundation::{ NSString, NSRect, NSSize, NSPoint, NSAutoreleasePool };
-use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask, NSBackingStoreBuffered, NSRunningApplication,
+use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask, NSClosableWindowMask, NSResizableWindowMask, NSBackingStoreBuffered, NSRunningApplication,
                      NSApplicationActivateIgnoringOtherApps, NSApplicationActivationPolicyRegular, NSFilenamesPboardType };
 
 use Color;
@@ -51,7 +51,7 @@ impl Window {
         let window = unsafe { NSWindow::alloc(nil)
             .initWithContentRect_styleMask_backing_defer_(NSRect::new(NSPoint::new(0., 0.),
                                                                       NSSize::new(width, height)),
-                                                          NSTitledWindowMask,
+                                                          NSTitledWindowMask | NSClosableWindowMask,
                                                           NSBackingStoreBuffered,
                                                           NO) };
 
@@ -103,7 +103,12 @@ impl Window {
             msg_send![responder, setViewController: event_ptr];
             NSView::addSubview_(self.nsview, responder);
             msg_send![self.nswindow, setDelegate:responder];
+
+            // make resizable
+            self.nswindow.setStyleMask_(self.nswindow.styleMask() | NSResizableWindowMask);
         }
+
+        // NSResizableWindowMask
 
         // let e: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
         // println!("{:?}", (*e).title);

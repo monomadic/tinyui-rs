@@ -4,11 +4,13 @@
 
 use cocoa::base::{ id, nil, NO, YES, class };
 use cocoa::foundation::{ NSString };
+use cocoa::appkit::{ NSColor };
 use objc::runtime::{ Class, Object };
 use objc;
 
 use Rect;
 use Window;
+use Color;
 
 #[link(name = "WebKit", kind = "framework")]
 extern {}
@@ -27,13 +29,12 @@ impl WebView {
                 obj
             };
 
-            let mut wv = WebView {
+            msg_send![webview, setOpaque:NO];
+            msg_send![webview, setBackgroundColor:Color::clear().nscolor()];
+
+            WebView {
                 id: webview,
-            };
-
-            wv.load_html_string("<div style='width: 100%; height: 100%; background-color: red'></div><h1>hi</h1>");
-
-            wv
+            }
         }
     }
 
