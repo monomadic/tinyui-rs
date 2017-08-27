@@ -16,19 +16,7 @@ use std::os::raw::c_void;
 pub struct Button {
     id: id,
     responder: id,
-    on_click_callback: Option<Box<FnMut()>>,
-}
-
-impl Button {
-    fn click(&mut self) {
-        // println!("{:?}", self.title);
-        println!("hi");
-        if let Some(ref mut callback) = self.on_click_callback {
-            callback();
-            // let ref mut click = *(callback.borrow_mut());
-            // click();
-        }
-    }
+    on_click_callback: Option<Box<FnMut(&mut Button) + 'static>>,
 }
 
 extern "C" fn onButtonClick(this: &Object, _cmd: Sel, target: id) {
@@ -89,11 +77,22 @@ impl Button {
         button
     }
 
-    pub fn on_click(&mut self, callback: Box<FnMut()>) {
-        self.on_click_callback = Some(callback);
+    pub fn on_click(&mut self, callback: Option<Box<FnMut(&mut Button) + 'static>>) {
+        self.on_click_callback = callback;
 
         let button_ptr: *mut c_void = self as *mut _ as *mut c_void;
         unsafe { msg_send![self.responder, setViewController: button_ptr] };
+    }
+
+    fn click(&mut self) {
+        // println!("{:?}", self.title);
+        // println!("hi");
+        let mut callback = self.on_click_callback.take();
+        if let Some(ref mut func) = callback {
+            func(self);
+            // let ref mut click = *(callback.borrow_mut());
+            // click();
+        }
     }
 
     pub fn set_text(&mut self, text: &str) {

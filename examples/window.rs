@@ -37,9 +37,12 @@ fn main() {
 
     window.setup();
 
-    button.on_click(Box::new(move || {
-        label.set_text("hi");
-    }));
+    button.on_click(Some(Box::new(
+        |button| {
+            // label.set_text("hi");
+            button.set_text("hi");
+        }
+    )));
 
     let on_file_drop = std::cell::RefCell::new(Box::new(move |path:String| {
         println!("file got dropped bro: {:?}", path);
