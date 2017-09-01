@@ -3,6 +3,7 @@ use cocoa::appkit::NSTextField;
 use cocoa::foundation::{ NSString };
 use Rect;
 use Window;
+use EventHandler;
 
 #[derive(Copy, Clone)]
 pub struct Label {
@@ -35,7 +36,7 @@ impl Label {
         unsafe { self.id.setStringValue_(NSString::alloc(nil).init_str(text)) };
     }
 
-    pub fn attach(&mut self, window: &mut Window) {
+    pub fn attach<H:EventHandler>(&mut self, window: &mut Window<H>) {
         window.add_subview(self.id);
     }
 }

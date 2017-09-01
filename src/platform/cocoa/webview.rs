@@ -11,6 +11,7 @@ use objc;
 use Rect;
 use Window;
 use Color;
+use EventHandler;
 
 #[link(name = "WebKit", kind = "framework")]
 extern {}
@@ -59,7 +60,7 @@ impl WebView {
         }
     }
 
-    pub fn attach(&mut self, window: &mut Window) {
+    pub fn attach<H:EventHandler>(&mut self, window: &mut Window<H>) {
         window.add_subview(self.id);
     }
 }

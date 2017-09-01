@@ -9,6 +9,7 @@ use objc::runtime::{ Class, Object, Sel };
 use objc::declare::ClassDecl;
 use Rect;
 use Window;
+use EventHandler;
 
 use std::cell::RefCell;
 use std::os::raw::c_void;
@@ -99,7 +100,7 @@ impl Button {
         unsafe { self.id.setTitle_(NSString::alloc(nil).init_str(text)) };
     }
 
-    pub fn attach(&mut self, window: &mut Window) {
+    pub fn attach<H:EventHandler>(&mut self, window: &mut Window<H>) {
         window.add_subview(self.id);
     }
 }

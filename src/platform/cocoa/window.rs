@@ -12,17 +12,22 @@ use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask,
 use Color;
 use Rect;
 
-pub struct Window {
+pub struct Window<'a, H:EventHandler + 'a> {
     pub nswindow: id,
     pub nsview: id,
+    handler: &'a H,
     events: Box<WindowEvents>,
+}
+
+pub trait EventHandler {
+    fn handle(&mut self);
 }
 
 pub struct WindowEvents {
     pub on_file_drop_callback: Option<RefCell<Box<FnMut(String)>>>,
 }
 
-impl Drop for Window {
+impl <'a, H:EventHandler + 'a>Drop for Window<'a, H> {
     fn drop(&mut self) {
         unsafe { self.nsview.removeFromSuperview() };
     }
@@ -41,12 +46,13 @@ impl WindowEvents {
     }
 }
 
-impl Window {
+impl <'a, H:EventHandler>Window<'a, H> {
 
     /// Create a new Window from scratch.
-    pub fn new(width: f64, height: f64) -> Result<Window, String> {
-
+    pub fn new(width: f64, height: f64, handler: &mut H) -> Result<Window<H>, String> {
         // callback();
+
+        handler.handle();
 
         let window = unsafe { NSWindow::alloc(nil)
             .initWithContentRect_styleMask_backing_defer_(NSRect::new(NSPoint::new(0., 0.),
@@ -89,6 +95,7 @@ impl Window {
             nswindow: window,
             nsview: view,
             events: events,
+            handler: handler,
         })
     }
 
@@ -148,7 +155,7 @@ impl Window {
     }
 
    /// Attach a Window class to an existing window.
-   pub fn attach_to(host_nsview: *mut c_void) -> Result<Window, String> {
+   pub fn attach_to<EH:EventHandler>(host_nsview: *mut c_void, handler: &H) -> Result<Window<H>, String> {
         let host_window = unsafe { msg_send![host_nsview as id, window] };
         // let host_nsview = unsafe { NSWindow::contentView(host_window) };
 
@@ -162,6 +169,7 @@ impl Window {
             }),
             nswindow: host_window,
             nsview: host_nsview as id,
+            handler: handler,
         })
    }
 

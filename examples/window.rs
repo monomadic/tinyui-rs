@@ -1,6 +1,7 @@
 extern crate tinyui;
 use tinyui::Window;
 use tinyui::{ Label, Rect, Color, Button, WebView };
+use tinyui::EventHandler;
 
 // use std::path::PathBuf;
 
@@ -20,14 +21,22 @@ use tinyui::{ Label, Rect, Color, Button, WebView };
 //     }
 // }
 
+struct App {}
+
+impl EventHandler for App {
+    fn handle(&mut self) {
+        println!("handling");
+    }
+}
+
 const WIDTH: f64 = 480.;
 const HEIGHT: f64 = 320.;
 
 fn main() {
-    // let mut app = App::new();
+    let mut app = App{};
     // app.window.run();
 
-    let mut window = Window::new(WIDTH, HEIGHT).unwrap();
+    let mut window = Window::new(WIDTH, HEIGHT, &mut app).unwrap();
     // window.on_load(&on_load);
     window.set_title("oh hai!");
     window.set_background_color(Color::black());

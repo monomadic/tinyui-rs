@@ -2,7 +2,7 @@
 extern crate cocoa;
 
 mod platform;
-pub use platform::window::Window;
+pub use platform::window::*;
 pub use platform::label::*;
 pub use platform::rect::*;
 pub use platform::color::*;
