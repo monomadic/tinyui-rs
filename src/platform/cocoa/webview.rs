@@ -10,6 +10,8 @@ use objc::runtime::{ Class, Object, Protocol, Sel };
 use objc::declare::{ ClassDecl };
 use objc;
 
+use std;
+
 use Rect;
 use Window;
 use Color;
@@ -24,22 +26,30 @@ pub struct WebView {
     id: id,
 }
 
+fn nsstring_to_str(string: id) -> String {
+    let bytes = unsafe {
+        let bytes: *const std::os::raw::c_char = msg_send![string, UTF8String];
+        bytes as *const u8
+    };
+    let len = unsafe { string.len() };
+    unsafe {
+        let bytes = std::slice::from_raw_parts(bytes, len);
+        String::from_utf8(bytes.to_vec()).unwrap()
+    }
+}
+
 pub fn wk_script_message_handler_class() -> &'static Class {
     use std::sync::{Once, ONCE_INIT};
-    static mut RESPONDER_CLASS: *const Class = 0 as *const Class;
+    
     static REGISTER_CUSTOM_SUBCLASS: Once = ONCE_INIT;
-
     REGISTER_CUSTOM_SUBCLASS.call_once(|| {
         let superclass = Class::get("WKUserContentController").unwrap();
-        // let proto = Protocol::get("WKScriptMessageHandler").expect("WKScriptMessageHandler protocol to exist");
-
-        // Class::get("WKScriptMessageHandler").expect("WKScriptMessageHandler to exist");
         let mut decl = ClassDecl::new("NotificationScriptMessageHandler", superclass).unwrap();
 
-        // decl.add_protocol(proto);
-
-        extern fn userContentController(this: &Object, _cmd: Sel, _: bool, _: id) {
-            println!("userContentController");
+        extern fn userContentController(this: &Object, _cmd: Sel, didReceive: bool, message: id) {
+            let name = unsafe { msg_send![message, name] };
+            let body = unsafe { msg_send![message, body] };
+            println!("{:?} {:?}", nsstring_to_str(name), nsstring_to_str(body));
         }
 
         unsafe {
