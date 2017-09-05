@@ -40,16 +40,25 @@ fn nsstring_to_str(string: id) -> String {
 
 pub fn wk_script_message_handler_class() -> &'static Class {
     use std::sync::{Once, ONCE_INIT};
-    
+
     static REGISTER_CUSTOM_SUBCLASS: Once = ONCE_INIT;
     REGISTER_CUSTOM_SUBCLASS.call_once(|| {
         let superclass = Class::get("WKUserContentController").unwrap();
         let mut decl = ClassDecl::new("NotificationScriptMessageHandler", superclass).unwrap();
 
         extern fn userContentController(this: &Object, _cmd: Sel, didReceive: bool, message: id) {
-            let name = unsafe { msg_send![message, name] };
-            let body = unsafe { msg_send![message, body] };
-            println!("{:?} {:?}", nsstring_to_str(name), nsstring_to_str(body));
+            let name: &str = &nsstring_to_str(unsafe { msg_send![message, name] });
+            let body: &str = &nsstring_to_str(unsafe { msg_send![message, body] });
+            println!("{:?} {:?}", name, body);
+
+            match name {
+                "notification" => {
+                    println!("notification...")
+                },
+                _ => {
+                    println!("nothing...");
+                }
+            }
         }
 
         unsafe {
@@ -58,7 +67,6 @@ pub fn wk_script_message_handler_class() -> &'static Class {
         }
 
         decl.register();
-
     });
 
     Class::get("NotificationScriptMessageHandler").expect("NotificationScriptMessageHandler to be valid.")
