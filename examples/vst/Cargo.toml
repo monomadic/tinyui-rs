@@ -10,3 +10,6 @@ tinyui = { path = "../../" }
 [lib]
 name = "dd_overdrive_gui"
 crate-type = ["cdylib"]
+
+# [profile.release]
+# lto = true

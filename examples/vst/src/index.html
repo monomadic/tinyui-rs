@@ -1,12 +1,8 @@
 <html style="background-color: #222; color: #EEE; font-family: Avenir">
-    <script>
-        // function changeBackground(color) {
-        //     document.body.style.background = color;
-        // }
-    </script>
+    <script></script>
 
-    <body onload="changeBackground('green');">
+    <body>
         <h1>DD-OVERDRIVEGUI</h1>
-        <button style='width: 150px'>PRESS ME</button>
+        <button style='width: 150px' onclick="window.webkit.messageHandlers.notification.postMessage('hello there');">PRESS ME</button>
     </body>
 </html>

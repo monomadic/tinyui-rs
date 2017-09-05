@@ -29,16 +29,16 @@ fn main() {
     let mut window = Window::new(WIDTH, HEIGHT, &mut app).unwrap();
     // window.on_load(&on_load);
     window.set_title("oh hai!");
-    window.set_background_color(Color::red());
+    // window.set_background_color(Color::red());
     
     label.attach(&mut window);
 
-    let mut button = Button::new("hello", Rect::new(180., 50., 60., 20.));
-    button.attach(&mut window);
+    // let mut button = Button::new("hello", Rect::new(180., 50., 60., 20.));
+    // button.attach(&mut window);
 
-    // let mut webview = WebView::new(window.frame());
-    // webview.load_html_string(include_str!("vst/src/knob.html"));
-    // webview.attach(&mut window);
+    let mut webview = WebView::new(window.frame());
+    webview.load_html_string(include_str!("vst/src/index.html"));
+    webview.attach(&mut window);
 
     // button.on_click(Some(Box::new(
     //     move |button| {
