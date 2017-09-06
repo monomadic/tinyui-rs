@@ -12,7 +12,7 @@ struct App {
 }
 
 impl EventHandler for App {
-    fn handle(&mut self) {
+    fn handle(&self) {
         println!("title: {:?}", self.title);
         self.label.set_text(&self.title);
     }
@@ -26,7 +26,7 @@ fn main() {
         label: label,
     };
 
-    let mut window = Window::new(WIDTH, HEIGHT, &mut app).unwrap();
+    let mut window = Window::new(WIDTH, HEIGHT, &app).unwrap();
     // window.on_load(&on_load);
     window.set_title("oh hai!");
     // window.set_background_color(Color::red());

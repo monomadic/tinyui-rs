@@ -49,7 +49,7 @@ pub fn wk_script_message_handler_class() -> &'static Class {
         extern fn userContentController(this: &Object, _cmd: Sel, didReceive: bool, message: id) {
             let name: &str = &nsstring_to_str(unsafe { msg_send![message, name] });
             let body: &str = &nsstring_to_str(unsafe { msg_send![message, body] });
-            println!("{:?} {:?}", name, body);
+            // println!("{:?} {:?}", name, body);
 
             match name {
                 "notification" => {

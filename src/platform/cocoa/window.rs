@@ -20,7 +20,7 @@ pub struct Window<'a, H:EventHandler + 'a> {
 }
 
 pub trait EventHandler {
-    fn handle(&mut self);
+    fn handle(&self);
 }
 
 pub struct WindowEvents {
@@ -49,7 +49,7 @@ impl WindowEvents {
 impl <'a, H:EventHandler>Window<'a, H> {
 
     /// Create a new Window from scratch.
-    pub fn new(width: f64, height: f64, handler: &mut H) -> Result<Window<H>, String> {
+    pub fn new(width: f64, height: f64, handler: &H) -> Result<Window<H>, String> {
         // callback();
 
         handler.handle();

@@ -9,25 +9,33 @@ use vst2::editor::Editor;
 extern crate tinyui;
 use tinyui::Window;
 use tinyui::{ WebView, Label, Rect, Color, Button };
+use tinyui::EventHandler;
 
 const WIDTH: f64 = 480.;
 const HEIGHT: f64 = 320.;
 
-struct DigiDist {
+struct DigiDist<'a> {
     threshold: f32,
     gain: f32,
-    app: Option<Window>,
+    app: Option<Window<'a>>,
     ui: WebView,
 }
 
-struct PluginWindow {
-    window: Window,
+struct PluginWindow<'a> {
+    window: Window<'a>,
     label: Label,
     button: Button,
 }
 
-impl Default for DigiDist {
-    fn default() -> DigiDist {
+impl <'a>EventHandler for DigiDist<'a> {
+    fn handle(&self) {
+        // println!("title: {:?}", self.title);
+        self.label.set_text(&self.title);
+    }
+}
+
+impl <'a>Default for DigiDist<'a> {
+    fn default() -> DigiDist<'a> {
         let mut ui = WebView::new(Rect::new(0., 0., WIDTH, HEIGHT));
         ui.load_html_string(include_str!("knob.html"));
 
@@ -40,7 +48,7 @@ impl Default for DigiDist {
     }
 }
 
-impl Editor for DigiDist {
+impl <'a>Editor for DigiDist<'a> {
     fn size(&self) -> (i32, i32) { (WIDTH as i32, HEIGHT as i32) }
     fn position(&self) -> (i32, i32) { (0, 0) }
     fn is_open(&mut self) -> bool { self.app.is_some() }

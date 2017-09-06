@@ -32,7 +32,7 @@ impl Label {
         }
     }
 
-    pub fn set_text(&mut self, text: &str) {
+    pub fn set_text(&self, text: &str) {
         unsafe { self.id.setStringValue_(NSString::alloc(nil).init_str(text)) };
     }
 
