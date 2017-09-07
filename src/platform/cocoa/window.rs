@@ -12,22 +12,32 @@ use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask,
 use Color;
 use Rect;
 
-pub struct Window<'a, H:EventHandler + 'a> {
+pub struct Window {
     pub nswindow: id,
     pub nsview: id,
-    handler: &'a H,
+    // handler: &'a H,
     events: Box<WindowEvents>,
 }
 
 pub trait EventHandler {
-    fn handle(&self);
+    fn handle(&mut self);
+}
+
+pub struct Handler {
+    handler: Box<EventHandler>,
+}
+
+impl EventHandler for Handler {
+    fn handle(&mut self) {
+        self.handler.handle();
+    }
 }
 
 pub struct WindowEvents {
     pub on_file_drop_callback: Option<RefCell<Box<FnMut(String)>>>,
 }
 
-impl <'a, H:EventHandler + 'a>Drop for Window<'a, H> {
+impl Drop for Window {
     fn drop(&mut self) {
         unsafe { self.nsview.removeFromSuperview() };
     }
@@ -46,13 +56,36 @@ impl WindowEvents {
     }
 }
 
-impl <'a, H:EventHandler>Window<'a, H> {
+// struct Holder<'a>(&'a mut (EventHandler + 'a));
+// static mut static_state: *mut Holder<'static> = 0 as *mut _;
+use std;
+
+impl Window {
 
     /// Create a new Window from scratch.
-    pub fn new(width: f64, height: f64, handler: &H) -> Result<Window<H>, String> {
+    pub fn new<H:'static + EventHandler>(width: f64, height: f64, handler: H) -> Result<Window, String> {
         // callback();
 
-        handler.handle();
+        // set the responder class delegate
+        use platform::platform::responder::*;
+        let responder: id = unsafe { msg_send![get_window_responder_class(), new] };
+
+        // handler.handle();
+        // let handler_ptr: *mut c_void = &mut handler as *mut _ as *mut c_void;
+        // unsafe { msg_send![responder, setEventHandler: handler_ptr]; }
+
+        set_event_handler_contained(responder, Handler{ handler: Box::new(handler) });
+        // let h = Holder(handler);
+        // unsafe {
+        //     // Straight-up lie to the compiler: "yeah, this is static"
+        //     static_state = std::mem::transmute(&h);
+        //     // c_api(my_callback_impl);
+        //     msg_send![responder, setEventHandler: static_state];
+        //     static_state = 0 as *mut _;
+        // }
+
+        // test
+        unsafe { msg_send![responder, testHandler]; }
 
         let window = unsafe { NSWindow::alloc(nil)
             .initWithContentRect_styleMask_backing_defer_(NSRect::new(NSPoint::new(0., 0.),
@@ -95,9 +128,17 @@ impl <'a, H:EventHandler>Window<'a, H> {
             nswindow: window,
             nsview: view,
             events: events,
-            handler: handler,
+            // handler: handler,
         })
     }
+
+    // pub fn set_handler<EH:EventHandler>(&mut self, handler: &EH) {
+    //     let handler_ptr: *mut c_void = &mut handler as *mut _ as *mut c_void;
+        
+    //     unsafe {
+    //         msg_send![self.responder, setEventHandler: event_ptr];
+    //     }
+    // }
 
     pub fn setup(&mut self) {
         let event_ptr: *mut c_void = &mut self.events as *mut _ as *mut c_void;
@@ -154,24 +195,24 @@ impl <'a, H:EventHandler>Window<'a, H> {
         Rect::from_nsrect(unsafe { NSView::bounds(self.nsview) })
     }
 
-   /// Attach a Window class to an existing window.
-   pub fn attach_to<EH:EventHandler>(host_nsview: *mut c_void, handler: &H) -> Result<Window<H>, String> {
-        let host_window = unsafe { msg_send![host_nsview as id, window] };
-        // let host_nsview = unsafe { NSWindow::contentView(host_window) };
+   // /// Attach a Window class to an existing window.
+   // pub fn attach_to<EH:EventHandler>(host_nsview: *mut c_void, handler: &H) -> Result<Window, String> {
+   //      let host_window = unsafe { msg_send![host_nsview as id, window] };
+   //      // let host_nsview = unsafe { NSWindow::contentView(host_window) };
 
-        let child_nsview = unsafe { NSView::alloc(nil) };
-        let child_view = unsafe { child_nsview.initWithFrame_(NSView::frame(host_nsview as id)) };
-        unsafe { NSView::addSubview_((host_nsview as id), child_view) }
+   //      let child_nsview = unsafe { NSView::alloc(nil) };
+   //      let child_view = unsafe { child_nsview.initWithFrame_(NSView::frame(host_nsview as id)) };
+   //      unsafe { NSView::addSubview_((host_nsview as id), child_view) }
 
-        Ok(Window {
-            events: Box::new(WindowEvents{
-                on_file_drop_callback: None,
-            }),
-            nswindow: host_window,
-            nsview: host_nsview as id,
-            handler: handler,
-        })
-   }
+   //      Ok(Window {
+   //          events: Box::new(WindowEvents{
+   //              on_file_drop_callback: None,
+   //          }),
+   //          nswindow: host_window,
+   //          nsview: host_nsview as id,
+   //          handler: handler,
+   //      })
+   // }
 
     pub fn on_file_drop(&mut self, callback: RefCell<Box<FnMut(String)>>) {
         self.events.on_file_drop_callback = Some(callback)

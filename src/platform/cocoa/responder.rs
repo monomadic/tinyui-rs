@@ -10,7 +10,7 @@ use objc::runtime::{Class, Object, Sel};
 use objc::declare::ClassDecl;
 
 use std::os::raw::c_void;
-use std::cell::RefCell;
+// use std::cell::RefCell;
 
 use platform::platform::window::WindowEvents;
 
@@ -18,6 +18,35 @@ extern "C" fn setViewController(this: &mut Object, _: Sel, controller: *mut c_vo
     unsafe {
         this.set_ivar("ViewController", controller);
     }
+}
+
+// pub fn set_event_handler<H:EventHandler>(responder: id, handler: H) {
+//     let boxed_handler = Box::new(handler);
+//     unsafe {
+//         let handler_ptr = Box::into_raw(boxed_handler) as *const EventHandler as *mut c_void;
+//         msg_send![responder, setEventHandler: handler_ptr];
+//     }
+// }
+
+pub fn set_event_handler_contained(responder: id, handler: Handler) {
+    let boxed_handler = Box::new(handler);
+    unsafe {
+        let handler_ptr = Box::into_raw(boxed_handler) as *const Handler as *mut c_void;
+        msg_send![responder, setEventHandler: handler_ptr];
+    }
+}
+
+pub extern "C" fn setEventHandler(this: &mut Object, _: Sel, handler: *mut c_void) {
+    println!("setEventHandler called");
+    unsafe { this.set_ivar("EventHandler", handler) };
+}
+
+use { Handler, EventHandler };
+
+pub extern "C" fn testHandler(this: &mut Object, _: Sel) {
+    let handler_ptr: *mut c_void = unsafe { *this.get_ivar("EventHandler") };
+    let mut handler: Box<EventHandler> = unsafe { Box::from_raw(handler_ptr as *mut Handler) };
+    handler.handle();
 }
 
 /// Invoked when the image is released
@@ -112,12 +141,21 @@ pub fn get_window_responder_class() -> *const Class {
         let mut decl = ClassDecl::new("ViewResponder", superclass).unwrap();
 
         decl.add_ivar::<*mut c_void>("ViewController");
+        decl.add_ivar::<*mut c_void>("EventHandler");
 
         unsafe {
 
             decl.add_method(sel!(setViewController:),
                             setViewController as
                             extern "C" fn(this: &mut Object, _: Sel, _: *mut c_void));
+
+            decl.add_method(sel!(setEventHandler:),
+                            setEventHandler as
+                            extern "C" fn(this: &mut Object, _: Sel, _: *mut c_void));
+
+            decl.add_method(sel!(testHandler),
+                            testHandler as
+                            extern "C" fn(this: &mut Object, _: Sel));
 
             decl.add_method(sel!(acceptsFirstResponder),
                 acceptsFirstResponder as extern fn(this: &Object, _: Sel) -> BOOL);

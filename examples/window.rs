@@ -12,9 +12,17 @@ struct App {
 }
 
 impl EventHandler for App {
-    fn handle(&self) {
-        println!("title: {:?}", self.title);
+    fn handle(&mut self) {
+        println!("tigtle: {:?}", self.title);
         self.label.set_text(&self.title);
+    }
+}
+
+struct MyButton {}
+
+impl EventHandler for MyButton {
+    fn handle(&mut self) {
+        println!("MyButton clicked");
     }
 }
 
@@ -26,19 +34,22 @@ fn main() {
         label: label,
     };
 
-    let mut window = Window::new(WIDTH, HEIGHT, &app).unwrap();
+    let mut window = Window::new(WIDTH, HEIGHT, app).unwrap();
     // window.on_load(&on_load);
     window.set_title("oh hai!");
     // window.set_background_color(Color::red());
     
-    label.attach(&mut window);
+    // label.attach(&mut window);
 
-    // let mut button = Button::new("hello", Rect::new(180., 50., 60., 20.));
-    // button.attach(&mut window);
+    let mut bh = MyButton{};
 
-    let mut webview = WebView::new(window.frame());
-    webview.load_html_string(include_str!("vst/src/index.html"));
-    webview.attach(&mut window);
+    let mut button = Button::new("hello", Rect::new(180., 50., 60., 20.));
+    button.attach(&mut window);
+    button.set_handler(&mut bh);
+
+    // let mut webview = WebView::new(window.frame());
+    // webview.load_html_string(include_str!("vst/src/index.html"));
+    // webview.attach(&mut window);
 
     // button.on_click(Some(Box::new(
     //     move |button| {

@@ -152,7 +152,7 @@ impl WebView {
         }
     }
 
-    pub fn attach<H:EventHandler>(&mut self, window: &mut Window<H>) {
+    pub fn attach(&mut self, window: &mut Window) {
         window.add_subview(self.id);
     }
 }
