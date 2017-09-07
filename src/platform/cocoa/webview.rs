@@ -49,20 +49,19 @@ pub fn wk_script_message_handler_class() -> &'static Class {
         let mut decl = ClassDecl::new("NotificationScriptMessageHandler", superclass).unwrap();
 
         extern fn userContentController(this: &mut Object, _cmd: Sel, didReceive: bool, message: id) {
-            let name: &str = &nsstring_to_str(unsafe { msg_send![message, name] });
+            let name = nsstring_to_str(unsafe { msg_send![message, name] });
             let body = nsstring_to_str(unsafe { msg_send![message, body] });
-            // println!("{:?} {:?}", name, body);
 
-            match name {
-                "notification" => {
-                    println!("notification...");
-                    let webview = unsafe { msg_send![message, webView] };
-                    send_event(webview, Event::WebEvent(body));
-                },
-                _ => {
-                    println!("nothing...");
-                }
-            }
+            let webview = unsafe { msg_send![message, webView] };
+            send_event(webview, Event::WebEvent(name, body));
+
+            // match name.as_str() {
+            //     "notification" => {
+            //         let webview = unsafe { msg_send![message, webView] };
+            //         send_event(webview, Event::WebEvent(name, body));
+            //     },
+            //     _ => {}
+            // }
         }
 
         unsafe {

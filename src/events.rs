@@ -12,5 +12,5 @@ pub enum Event {
     ButtonClicked,
 
     /// A notifier was sent from a WKWebView object.
-    WebEvent(String),
+    WebEvent(String, String), // change to String, String
 }
