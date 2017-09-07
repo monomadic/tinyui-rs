@@ -140,37 +140,6 @@ impl Window {
         })
     }
 
-    // pub fn set_handler<EH:EventHandler>(&mut self, handler: &EH) {
-    //     let handler_ptr: *mut c_void = &mut handler as *mut _ as *mut c_void;
-        
-    //     unsafe {
-    //         msg_send![self.responder, setEventHandler: event_ptr];
-    //     }
-    // }
-
-    pub fn setup(&mut self) {
-        // let event_ptr: *mut c_void = &mut self.events as *mut _ as *mut c_void;
-
-        // // set the responder class delegate
-        // use platform::platform::responder::*;
-        // let responder: id = unsafe { msg_send![get_window_responder_class(), new] };
-        
-        // unsafe {
-        //     msg_send![responder, setViewController: event_ptr];
-        //     NSView::addSubview_(self.nsview, responder);
-        //     msg_send![self.nswindow, setDelegate:responder];
-        // }
-        // println!("{:?}", (responder));
-
-        // let window: id = unsafe { msg_send![window, window] };
-        // let r: id = unsafe { msg_send![self.nswindow, delegate] };
-        // println!("{:?}", (r, responder ));
-        // unsafe { msg_send![responder, testHandler]; }
-
-        // let e: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
-        // println!("{:?}", (*e).title);
-    }
-
     pub fn make_resizable(&mut self) {
         // make resizable
         unsafe { self.nswindow.setStyleMask_(self.nswindow.styleMask() | NSResizableWindowMask) };
@@ -188,9 +157,6 @@ impl Window {
     }
 
     pub fn run(&mut self) {
-        // if let Some(ref mut on_load) = self.on_load_callback {
-        //     on_load();
-        // }
         unsafe {
             let app = NSApp();
             app.run();

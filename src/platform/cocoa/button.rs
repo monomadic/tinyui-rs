@@ -15,10 +15,10 @@ use Handler;
 use std::cell::RefCell;
 use std::os::raw::c_void;
 
+#[derive(Copy, Clone)]
 pub struct Button {
     id: id,
     responder: id,
-    on_click_callback: Option<Box<FnMut(&mut Button) + 'static>>,
 }
 
 extern "C" fn onButtonClick(this: &Object, _cmd: Sel, target: id) {
@@ -87,14 +87,13 @@ impl Button {
 
         let responder: id = unsafe { msg_send![RESPONDER_CLASS, new] };
         let button = unsafe {
-
             let button = NSButton::alloc(nil).initWithFrame_(position.to_nsrect());
             button.setTitle_(NSString::alloc(nil).init_str(text));
 
             msg_send![button, setTarget:responder];
             msg_send![button, setAction:sel!(onButtonClick:)];
 
-            Button { id: button, responder: responder, on_click_callback: None }
+            Button { id: button, responder: responder }
         };
 
         // use platform::platform::responder::*;
@@ -110,12 +109,12 @@ impl Button {
     //     unsafe { msg_send![self.responder, setEventHandler: handler_ptr as *mut c_void] };
     // }
 
-    pub fn on_click(&mut self, callback: Option<Box<FnMut(&mut Button) + 'static>>) {
-        self.on_click_callback = callback;
+    // pub fn on_click(&mut self, callback: Option<Box<FnMut(&mut Button) + 'static>>) {
+    //     self.on_click_callback = callback;
 
-        let button_ptr: *mut c_void = self as *mut _ as *mut c_void;
-        unsafe { msg_send![self.responder, setViewController: button_ptr] };
-    }
+    //     let button_ptr: *mut c_void = self as *mut _ as *mut c_void;
+    //     unsafe { msg_send![self.responder, setViewController: button_ptr] };
+    // }
 
     // fn click(&mut self) {
     //     // println!("{:?}", self.title);
