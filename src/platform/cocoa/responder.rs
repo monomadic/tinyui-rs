@@ -33,13 +33,26 @@ pub extern "C" fn setEventHandler(this: &mut Object, _: Sel, handler: *mut c_voi
     unsafe { this.set_ivar("EventHandler", handler) };
 }
 
-use { Handler, EventHandler };
+pub fn send_event(target: id, event: Event) {
+    let window: id = unsafe { msg_send![target, window] };
+    let responder: id = unsafe { msg_send![window, delegate] };
+    println!("{:?}", responder);
+    unsafe { msg_send![responder, testHandler]; }
+
+    let handler_ptr: *mut c_void = unsafe { *(*responder).get_ivar("EventHandler") };
+    let mut handler: Box<EventHandler> = unsafe { Box::from_raw(handler_ptr as *mut Handler) };
+    handler.handle(event);
+
+    std::mem::forget(handler); // forget this memory so the id isn't deleted!
+}
+
+use { Handler, EventHandler, Event };
 use std;
 pub extern "C" fn testHandler(this: &mut Object, _: Sel) {
     println!("testHandler called: {:?}", this);
     let handler_ptr: *mut c_void = unsafe { *this.get_ivar("EventHandler") };
     let mut handler: Box<EventHandler> = unsafe { Box::from_raw(handler_ptr as *mut Handler) };
-    handler.handle();
+    handler.handle(Event::ButtonClicked);
     std::mem::forget(handler); // forget this memory so the id isn't deleted!
 }
 

@@ -11,6 +11,8 @@ use Rect;
 use Window;
 use EventHandler;
 use Handler;
+use Event;
+use platform::platform::responder::send_event;
 
 use std::cell::RefCell;
 use std::os::raw::c_void;
@@ -20,13 +22,23 @@ pub struct Button {
     id: id,
 }
 
+use std;
 extern "C" fn onButtonClick(this: &Object, _cmd: Sel, target: id) {
     println!("onButtonClick called");
 
-    let window: id = unsafe { msg_send![target, window] };
-    let responder: id = unsafe { msg_send![window, delegate] };
-    println!("{:?}", responder);
-    unsafe { msg_send![responder, testHandler]; }
+    send_event(target, Event::ButtonClicked);
+
+    // let window: id = unsafe { msg_send![target, window] };
+    // let responder: id = unsafe { msg_send![window, delegate] };
+    // println!("{:?}", responder);
+    // unsafe { msg_send![responder, testHandler]; }
+
+    // println!("testHandler called: {:?}", this);
+    // let handler_ptr: *mut c_void = unsafe { *(*responder).get_ivar("EventHandler") };
+    // let mut handler: Box<EventHandler> = unsafe { Box::from_raw(handler_ptr as *mut Handler) };
+    // handler.handle(Event::ButtonClicked);
+
+    // std::mem::forget(handler); // forget this memory so the id isn't deleted!
 }
 
 impl Button {

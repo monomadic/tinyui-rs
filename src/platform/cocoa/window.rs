@@ -19,8 +19,9 @@ pub struct Window {
     events: Box<WindowEvents>,
 }
 
+use Event;
 pub trait EventHandler {
-    fn handle(&mut self);
+    fn handle(&mut self, event: Event);
 }
 
 pub struct Handler {
@@ -28,8 +29,8 @@ pub struct Handler {
 }
 
 impl EventHandler for Handler {
-    fn handle(&mut self) {
-        self.handler.handle();
+    fn handle(&mut self, event: Event) {
+        self.handler.handle(event);
     }
 }
 
