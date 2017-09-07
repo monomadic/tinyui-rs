@@ -63,7 +63,7 @@ impl WindowEvents {
 impl Window {
 
     /// Create a new Window from scratch.
-    pub fn new<H:'static + EventHandler>(width: f64, height: f64, handler: H) -> Result<Window, String> {
+    pub fn new<H:'static + EventHandler>(handler: H, width: f64, height: f64) -> Result<Window, String> {
         // callback();
 
         // set the responder class delegate

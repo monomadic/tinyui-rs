@@ -20,14 +20,6 @@ extern "C" fn setViewController(this: &mut Object, _: Sel, controller: *mut c_vo
     }
 }
 
-// pub fn set_event_handler<H:EventHandler>(responder: id, handler: H) {
-//     let boxed_handler = Box::new(handler);
-//     unsafe {
-//         let handler_ptr = Box::into_raw(boxed_handler) as *const EventHandler as *mut c_void;
-//         msg_send![responder, setEventHandler: handler_ptr];
-//     }
-// }
-
 pub fn set_event_handler_contained(responder: id, handler: Handler) {
     let boxed_handler = Box::new(handler);
     unsafe {
@@ -42,14 +34,13 @@ pub extern "C" fn setEventHandler(this: &mut Object, _: Sel, handler: *mut c_voi
 }
 
 use { Handler, EventHandler };
-
 use std;
 pub extern "C" fn testHandler(this: &mut Object, _: Sel) {
     println!("testHandler called: {:?}", this);
     let handler_ptr: *mut c_void = unsafe { *this.get_ivar("EventHandler") };
     let mut handler: Box<EventHandler> = unsafe { Box::from_raw(handler_ptr as *mut Handler) };
     handler.handle();
-    std::mem::forget(handler);
+    std::mem::forget(handler); // forget this memory so the id isn't deleted!
 }
 
 /// Invoked when the image is released

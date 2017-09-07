@@ -30,7 +30,7 @@ fn main() {
         button: button,
     };
 
-    let mut window = Window::new(WIDTH, HEIGHT, app).unwrap();
+    let mut window = Window::new(app, WIDTH, HEIGHT).unwrap();
     window.set_title("oh hai!");
     window.set_background_color(Color::red());
 
