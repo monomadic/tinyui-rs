@@ -37,16 +37,19 @@ pub fn set_event_handler_contained(responder: id, handler: Handler) {
 }
 
 pub extern "C" fn setEventHandler(this: &mut Object, _: Sel, handler: *mut c_void) {
-    println!("setEventHandler called");
+    println!("setEventHandler called: {:?}", handler);
     unsafe { this.set_ivar("EventHandler", handler) };
 }
 
 use { Handler, EventHandler };
 
+use std;
 pub extern "C" fn testHandler(this: &mut Object, _: Sel) {
+    println!("testHandler called: {:?}", this);
     let handler_ptr: *mut c_void = unsafe { *this.get_ivar("EventHandler") };
     let mut handler: Box<EventHandler> = unsafe { Box::from_raw(handler_ptr as *mut Handler) };
     handler.handle();
+    std::mem::forget(handler);
 }
 
 /// Invoked when the image is released

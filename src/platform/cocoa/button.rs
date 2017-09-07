@@ -30,13 +30,18 @@ extern "C" fn onButtonClick(this: &Object, _cmd: Sel, target: id) {
 
     // events.click();
 
+    let window: id = unsafe { msg_send![target, window] };
+    let responder: id = unsafe { msg_send![window, delegate] };
+    println!("{:?}", responder);
+    unsafe { msg_send![responder, testHandler]; }
+
     // let event_handler_ptr: *mut c_void = unsafe { *this.get_ivar("EventHandler") };
     // let event_handler: &mut Handler = unsafe { &mut *(event_handler_ptr as *mut Handler) };
     // event_handler.handle();
 
-    let event_handler_ptr: *mut c_void = unsafe { *this.get_ivar("EventHandler") };
-    let event_handler = unsafe { &mut *(event_handler_ptr as *mut Handler) };
-    event_handler.handle();
+    // let event_handler_ptr: *mut c_void = unsafe { *this.get_ivar("EventHandler") };
+    // let event_handler = unsafe { &mut *(event_handler_ptr as *mut Handler) };
+    // event_handler.handle();
 
 }
 
@@ -64,10 +69,10 @@ impl Button {
                 setViewController as
                 extern "C" fn(this: &mut Object, _: Sel, _: *mut c_void));
 
-            use platform::platform::responder::setEventHandler;
-            decl.add_method(sel!(setEventHandler:),
-                            setEventHandler as
-                            extern "C" fn(this: &mut Object, _: Sel, _: *mut c_void));
+            // use platform::platform::responder::setEventHandler;
+            // decl.add_method(sel!(setEventHandler:),
+            //                 setEventHandler as
+            //                 extern "C" fn(this: &mut Object, _: Sel, _: *mut c_void));
 
             decl.add_method(sel!(onButtonClick:),
                 onButtonClick as extern fn(this: &Object, _: Sel, _: id));
@@ -92,15 +97,18 @@ impl Button {
             Button { id: button, responder: responder, on_click_callback: None }
         };
 
+        // use platform::platform::responder::*;
+        // set_event_handler_contained(responder, Handler{ handler: Box::new(handler) });
+
         button
     }
 
-    pub fn set_handler<EH:EventHandler>(&mut self, mut handler: &mut EH) {
-        let handler_ptr: *mut c_void = &mut handler as *mut _ as *mut c_void;
-        // unsafe { msg_send![self.responder, setEventHandler: handler_ptr] };
+    // pub fn set_handler<EH:EventHandler>(&mut self, mut handler: &mut EH) {
+    //     let handler_ptr: *mut c_void = &mut handler as *mut _ as *mut c_void;
+    //     // unsafe { msg_send![self.responder, setEventHandler: handler_ptr] };
 
-        unsafe { msg_send![self.responder, setEventHandler: handler_ptr as *mut c_void] };
-    }
+    //     unsafe { msg_send![self.responder, setEventHandler: handler_ptr as *mut c_void] };
+    // }
 
     pub fn on_click(&mut self, callback: Option<Box<FnMut(&mut Button) + 'static>>) {
         self.on_click_callback = callback;

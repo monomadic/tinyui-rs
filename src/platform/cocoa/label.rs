@@ -36,7 +36,7 @@ impl Label {
         unsafe { self.id.setStringValue_(NSString::alloc(nil).init_str(text)) };
     }
 
-    pub fn attach<H:EventHandler>(&mut self, window: &mut Window) {
+    pub fn attach(&mut self, window: &mut Window) {
         window.add_subview(self.id);
     }
 }

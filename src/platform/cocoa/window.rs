@@ -24,7 +24,7 @@ pub trait EventHandler {
 }
 
 pub struct Handler {
-    handler: Box<EventHandler>,
+    pub handler: Box<EventHandler>,
 }
 
 impl EventHandler for Handler {
@@ -58,7 +58,7 @@ impl WindowEvents {
 
 // struct Holder<'a>(&'a mut (EventHandler + 'a));
 // static mut static_state: *mut Holder<'static> = 0 as *mut _;
-use std;
+// use std;
 
 impl Window {
 
@@ -85,7 +85,8 @@ impl Window {
         // }
 
         // test
-        unsafe { msg_send![responder, testHandler]; }
+        println!("{:?}", responder);
+        // unsafe { msg_send![responder, testHandler]; }
 
         let window = unsafe { NSWindow::alloc(nil)
             .initWithContentRect_styleMask_backing_defer_(NSRect::new(NSPoint::new(0., 0.),
@@ -95,6 +96,11 @@ impl Window {
                                                           NO) };
 
         let view = unsafe { NSWindow::contentView(window) };
+
+        unsafe { msg_send![window, setDelegate:responder] };
+        let r: id = unsafe { msg_send![window, delegate] };
+        // println!("{:?}", (r, responder));
+        // unsafe { msg_send![r, testHandler]; }
 
         let events = Box::new(WindowEvents{
             on_file_drop_callback: None,
@@ -124,6 +130,8 @@ impl Window {
                 registerForDraggedTypes:NSArray::arrayWithObject(nil, NSFilenamesPboardType)];
         }
 
+
+
         Ok(Window {
             nswindow: window,
             nsview: view,
@@ -141,17 +149,23 @@ impl Window {
     // }
 
     pub fn setup(&mut self) {
-        let event_ptr: *mut c_void = &mut self.events as *mut _ as *mut c_void;
+        // let event_ptr: *mut c_void = &mut self.events as *mut _ as *mut c_void;
 
-        // set the responder class delegate
-        use platform::platform::responder::*;
-        let responder: id = unsafe { msg_send![get_window_responder_class(), new] };
+        // // set the responder class delegate
+        // use platform::platform::responder::*;
+        // let responder: id = unsafe { msg_send![get_window_responder_class(), new] };
         
-        unsafe {
-            msg_send![responder, setViewController: event_ptr];
-            NSView::addSubview_(self.nsview, responder);
-            msg_send![self.nswindow, setDelegate:responder];
-        }
+        // unsafe {
+        //     msg_send![responder, setViewController: event_ptr];
+        //     NSView::addSubview_(self.nsview, responder);
+        //     msg_send![self.nswindow, setDelegate:responder];
+        // }
+        // println!("{:?}", (responder));
+
+        // let window: id = unsafe { msg_send![window, window] };
+        // let r: id = unsafe { msg_send![self.nswindow, delegate] };
+        // println!("{:?}", (r, responder ));
+        // unsafe { msg_send![responder, testHandler]; }
 
         // let e: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
         // println!("{:?}", (*e).title);

@@ -13,7 +13,7 @@ struct App {
 
 impl EventHandler for App {
     fn handle(&mut self) {
-        println!("tigtle: {:?}", self.title);
+        println!("title: {:?}", self.title);
         self.label.set_text(&self.title);
     }
 }
@@ -29,7 +29,7 @@ impl EventHandler for MyButton {
 fn main() {
     let mut label = Label::new("hello", Rect::new(10., 10., 300., 20.));
 
-    let mut app = App{
+    let app = App{
         title: "window title".to_string(),
         label: label,
     };
@@ -39,13 +39,13 @@ fn main() {
     window.set_title("oh hai!");
     // window.set_background_color(Color::red());
     
-    // label.attach(&mut window);
+    label.attach(&mut window);
 
     let mut bh = MyButton{};
 
     let mut button = Button::new("hello", Rect::new(180., 50., 60., 20.));
     button.attach(&mut window);
-    button.set_handler(&mut bh);
+    // button.set_handler(&mut bh);
 
     // let mut webview = WebView::new(window.frame());
     // webview.load_html_string(include_str!("vst/src/index.html"));
