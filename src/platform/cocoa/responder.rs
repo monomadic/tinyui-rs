@@ -1,16 +1,13 @@
 #![allow(non_snake_case)]
 #![allow(unused_variables)]
 
-// use cocoa;
 use cocoa::base::{id};
 
-// use objc::runtime;
 use objc::runtime::{BOOL, YES};
 use objc::runtime::{Class, Object, Sel};
 use objc::declare::ClassDecl;
 
 use std::os::raw::c_void;
-// use std::cell::RefCell;
 
 use platform::platform::window::WindowEvents;
 
@@ -29,14 +26,13 @@ pub fn set_event_handler_contained(responder: id, handler: Handler) {
 }
 
 pub extern "C" fn setEventHandler(this: &mut Object, _: Sel, handler: *mut c_void) {
-    println!("setEventHandler called: {:?}", handler);
     unsafe { this.set_ivar("EventHandler", handler) };
 }
 
 pub fn send_event(target: id, event: Event) {
     let window: id = unsafe { msg_send![target, window] };
     let responder: id = unsafe { msg_send![window, delegate] };
-    println!("{:?}", responder);
+
     unsafe { msg_send![responder, testHandler]; }
 
     let handler_ptr: *mut c_void = unsafe { *(*responder).get_ivar("EventHandler") };
@@ -49,7 +45,6 @@ pub fn send_event(target: id, event: Event) {
 use { Handler, EventHandler, Event };
 use std;
 pub extern "C" fn testHandler(this: &mut Object, _: Sel) {
-    println!("testHandler called: {:?}", this);
     let handler_ptr: *mut c_void = unsafe { *this.get_ivar("EventHandler") };
     let mut handler: Box<EventHandler> = unsafe { Box::from_raw(handler_ptr as *mut Handler) };
     handler.handle(Event::ButtonClicked);

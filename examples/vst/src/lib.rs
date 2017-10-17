@@ -29,7 +29,6 @@ struct PluginWindow<'a> {
 
 impl <'a>EventHandler for DigiDist<'a> {
     fn handle(&self) {
-        // println!("title: {:?}", self.title);
         self.label.set_text(&self.title);
     }
 }

@@ -86,7 +86,7 @@ impl Window {
         // }
 
         // test
-        println!("{:?}", responder);
+        // println!("{:?}", responder);
         // unsafe { msg_send![responder, testHandler]; }
 
         let window = unsafe { NSWindow::alloc(nil)

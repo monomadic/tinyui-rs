@@ -33,7 +33,6 @@ extern "C" fn onButtonClick(this: &Object, _cmd: Sel, target: id) {
     // println!("{:?}", responder);
     // unsafe { msg_send![responder, testHandler]; }
 
-    // println!("testHandler called: {:?}", this);
     // let handler_ptr: *mut c_void = unsafe { *(*responder).get_ivar("EventHandler") };
     // let mut handler: Box<EventHandler> = unsafe { Box::from_raw(handler_ptr as *mut Handler) };
     // handler.handle(Event::ButtonClicked);
