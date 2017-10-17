@@ -2,20 +2,20 @@ use cocoa::foundation::{ NSRect, NSPoint, NSSize };
 
 #[derive(Copy, Clone, Debug)]
 pub struct Rect {
-    origin: Point,
-    size: Size,
+    pub origin: Point,
+    pub size: Size,
 }
 
 #[derive(Copy, Clone, Debug)]
 pub struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 
 #[derive(Copy, Clone, Debug)]
 pub struct Size {
-    width: f64,
-    height: f64,
+    pub width: f64,
+    pub height: f64,
 }
 
 impl Rect {
