@@ -1,6 +1,6 @@
 extern crate tinyui;
 use tinyui::Window;
-use tinyui::{ Label, Rect, Color, Button, EventHandler, Event };
+use tinyui::{ Label, Rect, Color, Slider, Button, EventHandler, Event };
 
 const WIDTH: f64 = 480.;
 const HEIGHT: f64 = 320.;
@@ -9,6 +9,7 @@ const HEIGHT: f64 = 320.;
 struct App {
     label: Label,
     button: Button,
+    slider: Slider,
 }
 
 impl EventHandler for App {
@@ -20,10 +21,12 @@ impl EventHandler for App {
 fn main() {
     let mut label = Label::new("hello", Rect::new(10., 10., 300., 20.));
     let mut button = Button::new("hello", Rect::new(180., 50., 60., 20.));
+    let mut slider = Slider::new(0.4, Rect::new(10., HEIGHT - 40., WIDTH - 20., 20.));
 
     let app = App{
         label: label,
         button: button,
+        slider: slider,
     };
 
     let mut window = Window::new(app, WIDTH, HEIGHT).unwrap();
@@ -32,6 +35,7 @@ fn main() {
 
     label.attach(&mut window);
     button.attach(&mut window);
+    slider.attach(&mut window);
 
     window.run(); // not necessary on vsts.
 }

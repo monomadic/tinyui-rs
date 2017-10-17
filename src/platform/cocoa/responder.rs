@@ -47,7 +47,7 @@ use std;
 pub extern "C" fn testHandler(this: &mut Object, _: Sel) {
     let handler_ptr: *mut c_void = unsafe { *this.get_ivar("EventHandler") };
     let mut handler: Box<EventHandler> = unsafe { Box::from_raw(handler_ptr as *mut Handler) };
-    handler.handle(Event::ButtonClicked);
+    // handler.handle(Event::ButtonClicked);
     std::mem::forget(handler); // forget this memory so the id isn't deleted!
 }
 
