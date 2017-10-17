@@ -1,6 +1,6 @@
 extern crate tinyui;
 use tinyui::Window;
-use tinyui::{ Point, Size, Label, Rect, Color, Slider, Button, EventHandler, Event };
+use tinyui::{ Point, Size, Label, Rect, Color, Slider, SliderType, Button, EventHandler, Event };
 
 const WIDTH: f64 = 480.;
 const HEIGHT: f64 = 320.;
@@ -25,6 +25,7 @@ fn main() {
         origin: Point{ x:10., y:HEIGHT-40. },
         size: Size{ width:40., height:150.},
     });
+    slider.set_slider_type(SliderType::Circular);
 
     let app = App{
         label: label,

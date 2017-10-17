@@ -23,8 +23,8 @@ pub struct Slider {
 
 #[derive(Copy, Clone)]
 pub enum SliderType {
-    Linear,
-    Circular,
+    Linear = 0,
+    Circular = 1,
 }
 
 use std;
@@ -60,9 +60,6 @@ impl Slider {
             msg_send![slider, setMaximumValue:max];
             msg_send![slider, setValue:value];
 
-
-            msg_send![slider, setSliderType:1];
-
             msg_send![slider, setTarget:responder];
             msg_send![slider, setAction:sel!(onMouseMove:)];
 
@@ -70,6 +67,10 @@ impl Slider {
         };
 
         slider
+    }
+
+    pub fn set_slider_type(&mut self, value: SliderType) {
+        unsafe { msg_send![self.id, setSliderType:value as u32] };
     }
 
     pub fn set_value(&mut self, value: f32) {
