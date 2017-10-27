@@ -11,6 +11,7 @@ struct MyWindow {
     window: Window,
     label: Label,
     button: Button,
+    button_on: Button,
     slider: Slider,
     slider_label: Label,
 }
@@ -23,6 +24,7 @@ impl EventHandler for MyWindow {
             Event::ButtonClicked(name) => {
                 match name.as_str() {
                     "a button" => self.button.set_text("clicked me"),
+                    "b button" => self.button_on.set_text("clicked me too"),
                     _ => ()
                 }
             },
@@ -33,24 +35,29 @@ impl EventHandler for MyWindow {
 }
 
 fn main() {
+    let window_rect = Rect::new(0., 0., HEIGHT, WIDTH);
+    let (top_half_rect, bottom_half_rect) = window_rect.split_horizontal();
+
     let mut app = MyWindow {
-        label: Label::new("Cocoa Controls Demo", Rect::new(10., HEIGHT - 30., 300., 20.)),
-        button: ButtonBuilder {
-            id: "a button",
-            text: "click me",
-            style: ButtonStyle::Square,
-            position: Rect::new(10., 50., 150., 50.)}.build(),
+        label: Label::new("Cocoa Controls Demo", top_half_rect),
         slider: SliderBuilder {
             id: "a slider",
             value: 0.5,
             min_value: 0.0,
             max_value: 1.0,
             style: SliderStyle::Circular,
-            position: Rect {
-                origin: Point{ x:10., y:HEIGHT-80. },
-                size: Size{ width:40., height:40.}
-            }}.build(),
-        slider_label: Label::new("0.5", Rect::new(25., HEIGHT-230., 40., 150.)),
+            position: top_half_rect}.build(),
+        slider_label: Label::new("0.5", top_half_rect),
+        button: ButtonBuilder {
+            id: "a button",
+            text: "click me",
+            style: ButtonStyle::Square,
+            position: bottom_half_rect.inset(10.) }.build(),
+        button_on: ButtonBuilder {
+            id: "b button",
+            text: "click me",
+            style: ButtonStyle::Square,
+            position: top_half_rect.inset(10.) }.build(),
         window: WindowBuilder {
             title: "Window Controls Example",
             style: WindowStyle::Default,
@@ -58,10 +65,11 @@ fn main() {
         }.build(),
     };
 
-    app.label.attach(&mut app.window);
+    // app.label.attach(&mut app.window);
     app.button.attach(&mut app.window);
-    app.slider.attach(&mut app.window);
-    app.slider_label.attach(&mut app.window);
+    app.button_on.attach(&mut app.window);
+    // app.slider.attach(&mut app.window);
+    // app.slider_label.attach(&mut app.window);
 
     app.window.set_handler(app);
 

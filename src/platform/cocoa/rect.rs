@@ -28,6 +28,35 @@ impl Rect {
     }
 
     pub fn to_nsrect(&self) -> NSRect {
-        NSRect::new(NSPoint::new(self.origin.x, self.origin.y), NSSize::new(self.size.width, self.size.height))
+        NSRect::new(NSPoint::new(self.origin.y, self.origin.x), NSSize::new(self.size.height, self.size.width))
+    }
+
+    pub fn split_vertical(self) -> (Rect, Rect) {
+        (
+            Rect{
+                origin: Point{ x: self.origin.x, y: self.origin.y },
+                size: Size { width: self.size.width, height: self.size.height / 2. }},
+            Rect{
+                origin: Point { x: self.origin.x, y: self.size.height / 2. },
+                size: Size { width: self.size.width, height: self.size.height / 2. }}
+        )
+    }
+
+    pub fn split_horizontal(self) -> (Rect, Rect) {
+        (
+            Rect{
+                origin: Point{ x: self.origin.x, y: self.origin.y },
+                size: Size { width: self.size.width / 2., height: self.size.height }},
+            Rect{
+                origin: Point { x: self.size.width / 2., y: self.origin.y },
+                size: Size { width: self.size.width / 2., height: self.size.height }}
+        )
+    }
+
+    pub fn inset(self, pts: f64) -> Rect {
+        Rect {
+            origin: Point{ x: self.origin.x + pts, y: self.origin.y + pts },
+            size: Size { width: self.size.width - (pts*2.), height: self.size.height - (pts*2.) },
+        }
     }
 }
