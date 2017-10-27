@@ -24,7 +24,7 @@ impl Rect {
     }
 
     pub fn from_nsrect(rect: NSRect) -> Self {
-        Rect{ origin: Point{ x: rect.origin.x, y: rect.origin.y }, size: Size{ width: rect.size.width, height: rect.size.height }}
+        Rect{ origin: Point{ x: rect.origin.y, y: rect.origin.x }, size: Size{ width: rect.size.height, height: rect.size.width }}
     }
 
     pub fn to_nsrect(&self) -> NSRect {

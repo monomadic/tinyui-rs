@@ -1,6 +1,6 @@
 extern crate tinyui;
 use tinyui::Window;
-use tinyui::{ App, Point, Size, Label, Rect, SliderBuilder, Slider,
+use tinyui::{ App, Size, Label, Rect, SliderBuilder, Slider,
     SliderStyle, ButtonBuilder, Button, ButtonStyle, EventHandler, Event, WindowBuilder, WindowStyle };
 
 const WIDTH: f64 = 480.;
