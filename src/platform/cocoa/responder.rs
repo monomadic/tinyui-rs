@@ -60,7 +60,7 @@ extern fn dragging_entered(this: &Object, _: Sel, sender: id) -> BOOL { YES }
 extern fn perform_drag_operation(this: &Object, _: Sel, sender: id) -> BOOL {
     use cocoa::appkit::NSPasteboard;
     use cocoa::foundation::NSFastEnumeration;
-    // use std::path::PathBuf;
+    use std::path::PathBuf;
     use cocoa::appkit;
     use std::os::raw::c_void;
 
@@ -74,14 +74,16 @@ extern fn perform_drag_operation(this: &Object, _: Sel, sender: id) -> BOOL {
         let f = unsafe{ NSString::UTF8String(file) };
         let path = unsafe { CStr::from_ptr(f).to_string_lossy().into_owned() };
 
-        let event_ptr: *mut c_void = unsafe { *this.get_ivar("ViewController") };
-        // let events: &mut RefCell<Box<WindowEvents>> = unsafe { &mut *(event_ptr as *mut RefCell<Box<WindowEvents>>) };
+        let window: id = unsafe { msg_send![sender, draggingDestinationWindow] };
 
-        // let mut winevents = (*events).borrow_mut();
-        // (*winevents).on_file_drop(path);
+        let responder: id = unsafe { msg_send![window, delegate] };
+        let handler_ptr: *mut c_void = unsafe { *(*responder).get_ivar("EventHandler") };
+        let mut handler: Box<EventHandler> = unsafe { Box::from_raw(handler_ptr as *mut Handler) };
 
-        // let events: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
-        // (*events).on_file_drop(path);
+        let mut pathbuf = PathBuf::new();
+        pathbuf.push(path);
+        handler.handle(Event::DroppedFile(pathbuf));
+        std::mem::forget(handler); // forget this memory so the id isn't deleted!
     };
 
     YES
