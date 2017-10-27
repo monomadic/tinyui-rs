@@ -9,7 +9,7 @@ pub enum Event {
     DroppedFile(PathBuf),
 
     /// A native UI button was clicked.
-    ButtonClicked,
+    ButtonClicked(String),
 
     /// A notifier was sent from a WKWebView object.
     WebEvent(String, String), // change to String, String

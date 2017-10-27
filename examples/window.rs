@@ -20,7 +20,7 @@ impl EventHandler for App {
 
 fn main() {
     let mut label = Label::new("hello", Rect::new(10., 10., 300., 20.));
-    let mut button = Button::new("hello", Rect::new(180., 50., 60., 20.));
+    let mut button = Button::new("gummo button", "hello", Rect::new(180., 50., 60., 20.));
     let mut slider = Slider::new(0.2, 0., 100., Rect{
         origin: Point{ x:10., y:HEIGHT-40. },
         size: Size{ width:40., height:150.},
