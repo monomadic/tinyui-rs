@@ -1,5 +1,4 @@
 extern crate tinyui;
-use tinyui::Window;
 use tinyui::{ Color, WebView, EventHandler, Event, WindowBuilder, WindowStyle, Size };
 
 const WIDTH: f64 = 480.;
