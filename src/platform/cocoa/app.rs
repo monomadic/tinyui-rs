@@ -1,20 +1,21 @@
 use cocoa::appkit::{ NSApp, NSApplication };
-use cocoa::base::id;
+use cocoa::base::{ nil };
 
 pub struct App {
-    id: id,
 }
 
 impl App {
-    pub fn run() -> App {
+    pub fn quit() {
         unsafe {
             let app = NSApp();
-            app.run();
-            App { id: app }
+            msg_send![app, terminate:nil];
         }
     }
 
-    pub fn terminate(&self) {
-        unsafe { msg_send![self.id, terminate] };
+    pub fn run() {
+        unsafe {
+            let app = NSApp();
+            app.run();
+        }
     }
 }

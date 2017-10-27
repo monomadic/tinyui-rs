@@ -29,6 +29,7 @@ impl EventHandler for MyWindow {
                 }
             },
             Event::SliderUpdated(_, val) => self.slider_label.set_text(&format!("{:.2}", val)),
+            Event::WindowWillClose => { App::quit(); },
             _ => ()
         }
     }

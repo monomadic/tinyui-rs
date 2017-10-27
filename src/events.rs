@@ -2,8 +2,8 @@ use std::path::PathBuf;
 
 #[derive(Clone, Debug)]
 pub enum Event {
-    /// The window was closed.
-    Closed,
+    /// The window will close.
+    WindowWillClose,
 
     /// A file has been dropped into the window.
     DroppedFile(PathBuf),

@@ -120,6 +120,19 @@ extern fn dragging_exited(this: &Object, _: Sel, sender: id) {
     std::mem::forget(handler);
 }
 
+extern fn window_closed(this: &Object, _: Sel, sender: id) {
+    // let window: id = unsafe { msg_send![sender, delegate] };
+    // let mut handler = objc_retrieve_event_handler(sender);
+
+    let window: id = unsafe { msg_send![sender, object] };
+    let responder: id = unsafe { msg_send![window, delegate] };
+    let handler_ptr: *mut c_void = unsafe { *(*responder).get_ivar("EventHandler") };
+    let mut handler: Box<EventHandler> = unsafe { Box::from_raw(handler_ptr as *mut Handler) };
+
+    handler.handle(Event::WindowWillClose);
+    std::mem::forget(handler);
+}
+
 // @property(readonly) BOOL acceptsFirstResponder;
 extern "C" fn acceptsFirstResponder(_: &Object, _: Sel) -> BOOL {
     println!("acceptsFirstResponder() hit");
@@ -140,7 +153,6 @@ extern "C" fn mouseEvent(this: &Object, _: Sel, mouseEvent: id) {
 extern fn did_become_active(this: &Object, _: Sel, _: id) {
     println!("focused");
 }
-
 
 pub fn get_window_responder_class() -> *const Class {
 
@@ -194,6 +206,9 @@ pub fn get_window_responder_class() -> *const Class {
                 conclude_drag_operation as extern fn(&Object, Sel, id));
             decl.add_method(sel!(draggingExited:),
                 dragging_exited as extern fn(&Object, Sel, id));
+
+            decl.add_method(sel!(windowWillClose:),
+                window_closed as extern fn(&Object, Sel, id));
 
             RESPONDER_CLASS = decl.register();
         }

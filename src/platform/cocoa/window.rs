@@ -74,6 +74,21 @@ impl WindowBuilder {
 
 impl Window {
 
+    pub fn close(&mut self) {
+        unsafe {
+            self.nsview.removeFromSuperview();
+        };
+
+        unsafe {
+            msg_send![self.nsview, release];
+            msg_send![self.nswindow, release];
+        };
+
+
+        self.nsview = nil;
+        self.nswindow = nil;
+    }
+
     pub fn set_handler<H:'static + EventHandler>(self, handler: H) {
         use platform::platform::responder::*;
         let responder: id = unsafe { msg_send![self.nswindow, delegate] };
