@@ -4,6 +4,8 @@ NOTE: This code is not ready for use yet. It can create basic things but the API
 
 A tiny native windowing and GUI library for rust. Currently supports MacOS with other platforms in the future (any help on this would be appreciated!).
 
+<img src="screenshot.png" alt="screenshot" width="100%">
+
 Major goals are:
 - **Simple Rust** - code should not use complicated rust features unless absolutely necessary. Should be usable by newcomers to rust to create simple and expressive guis. Apps are simple rust structs, events are simple enums.
 - **Native** - event driven, using native UI controls.
