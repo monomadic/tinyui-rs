@@ -5,6 +5,7 @@ pub mod color;
 pub mod button;
 pub mod slider;
 pub mod webview;
+pub mod app;
 
 mod responder;
 

@@ -12,11 +12,13 @@ use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask,
 use Color;
 use Rect;
 
+#[derive(Copy, Clone)]
 pub struct Window {
     pub nswindow: id,
     pub nsview: id,
     // handler: &'a H,
-    events: Box<WindowEvents>,
+    // events: Box<WindowEvents>,
+    // handler: EventHandler,
 }
 
 use Event;
@@ -38,11 +40,11 @@ pub struct WindowEvents {
     pub on_file_drop_callback: Option<RefCell<Box<FnMut(String)>>>,
 }
 
-impl Drop for Window {
-    fn drop(&mut self) {
-        unsafe { self.nsview.removeFromSuperview() };
-    }
-}
+// impl Drop for Window {
+//     fn drop(&mut self) {
+//         unsafe { self.nsview.removeFromSuperview() };
+//     }
+// }
 
 impl WindowEvents {
     pub fn on_mouse_down(&mut self) {
@@ -63,8 +65,14 @@ impl WindowEvents {
 
 impl Window {
 
+    pub fn set_handler<H:'static + EventHandler>(self, handler: H) {
+        use platform::platform::responder::*;
+        let responder: id = unsafe { msg_send![self.nswindow, delegate] };
+        set_event_handler_contained(responder, Handler{ handler: Box::new(handler) });
+    }
+
     /// Create a new Window from scratch.
-    pub fn new<H:'static + EventHandler>(handler: H, width: f64, height: f64) -> Result<Window, String> {
+    pub fn new(width: f64, height: f64) -> Result<Window, String> {
         // callback();
 
         // set the responder class delegate
@@ -75,7 +83,8 @@ impl Window {
         // let handler_ptr: *mut c_void = &mut handler as *mut _ as *mut c_void;
         // unsafe { msg_send![responder, setEventHandler: handler_ptr]; }
 
-        set_event_handler_contained(responder, Handler{ handler: Box::new(handler) });
+        // set_event_handler_contained(responder, Handler{ handler: Box::new(handler) });
+
         // let h = Holder(handler);
         // unsafe {
         //     // Straight-up lie to the compiler: "yeah, this is static"
@@ -99,7 +108,7 @@ impl Window {
         let view = unsafe { NSWindow::contentView(window) };
 
         unsafe { msg_send![window, setDelegate:responder] };
-        let r: id = unsafe { msg_send![window, delegate] };
+        // let r: id = unsafe { msg_send![window, delegate] };
         // println!("{:?}", (r, responder));
         // unsafe { msg_send![r, testHandler]; }
 
@@ -131,13 +140,11 @@ impl Window {
                 registerForDraggedTypes:NSArray::arrayWithObject(nil, NSFilenamesPboardType)];
         }
 
-
-
         Ok(Window {
             nswindow: window,
             nsview: view,
-            events: events,
-            // handler: handler,
+            // events: events,
+            // handler: Box::new(),
         })
     }
 
@@ -195,9 +202,9 @@ impl Window {
    //      })
    // }
 
-    pub fn on_file_drop(&mut self, callback: RefCell<Box<FnMut(String)>>) {
-        self.events.on_file_drop_callback = Some(callback)
-    }
+    // pub fn on_file_drop(&mut self, callback: RefCell<Box<FnMut(String)>>) {
+    //     self.events.on_file_drop_callback = Some(callback)
+    // }
 
    // unsafe fn prepare_for_display(&mut window: Window) {
    //     // self.view.set_wants_best_resolution_opengl_surface(YES);

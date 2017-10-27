@@ -41,6 +41,19 @@ pub enum ButtonStyle {
     Inline = 15,
 }
 
+pub struct ButtonBuilder {
+    pub id: &'static str,
+    pub text: &'static str,
+    pub style: ButtonStyle,
+    pub position: Rect,
+}
+
+impl ButtonBuilder {
+    pub fn build(&self) -> Button {
+        Button::new(self.id, self.text, self.style, self.position)
+    }
+}
+
 use std;
 extern "C" fn onButtonClick(this: &Object, _cmd: Sel, target: id) {
 
