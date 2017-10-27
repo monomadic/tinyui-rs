@@ -23,9 +23,24 @@ pub struct Slider {
 }
 
 #[derive(Copy, Clone)]
-pub enum SliderType {
+pub enum SliderStyle {
     Linear = 0,
     Circular = 1,
+}
+
+pub struct SliderBuilder {
+    pub id: &'static str,
+    pub value: f32,
+    pub min_value: f32,
+    pub max_value: f32,
+    pub style: SliderStyle,
+    pub position: Rect,
+}
+
+impl SliderBuilder {
+    pub fn build(&self) -> Slider {
+        Slider::new(self.id, self.value, self.min_value, self.max_value, self.style, self.position)
+    }
 }
 
 use std;
@@ -40,7 +55,7 @@ extern "C" fn onSliderMove(this: &Object, _cmd: Sel, target: id) {
 }
 
 impl Slider {
-    pub fn new(name: &str, value:f32, min:f32, max:f32, position:Rect) -> Self {
+    pub fn new(name: &str, value:f32, min:f32, max:f32, style: SliderStyle, position:Rect) -> Self {
         
         // singleton class definition
         use std::sync::{Once, ONCE_INIT};
@@ -68,6 +83,8 @@ impl Slider {
             msg_send![slider, setMaximumValue:max];
             msg_send![slider, setValue:value];
 
+            msg_send![slider, setSliderType:style as u32];
+
             let objc_text = NSString::alloc(nil).init_str(name);
             (*responder).set_ivar("_name", objc_text as u64);
 
@@ -80,7 +97,7 @@ impl Slider {
         slider
     }
 
-    pub fn set_slider_type(&mut self, value: SliderType) {
+    pub fn set_slider_type(&mut self, value: SliderStyle) {
         unsafe { msg_send![self.id, setSliderType:value as u32] };
     }
 

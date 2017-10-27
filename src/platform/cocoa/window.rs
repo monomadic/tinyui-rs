@@ -59,9 +59,22 @@ impl WindowEvents {
     }
 }
 
-// struct Holder<'a>(&'a mut (EventHandler + 'a));
-// static mut static_state: *mut Holder<'static> = 0 as *mut _;
-// use std;
+pub enum WindowStyle {
+    Default,
+}
+
+use Size;
+pub struct WindowBuilder {
+    pub title: &'static str,
+    pub style: WindowStyle,
+    pub size: Size,
+}
+
+impl WindowBuilder {
+    pub fn build(&self) -> Window {
+        Window::new(self.title, self.size.width, self.size.height).expect("window to build")
+    }
+}
 
 impl Window {
 
@@ -72,7 +85,7 @@ impl Window {
     }
 
     /// Create a new Window from scratch.
-    pub fn new(width: f64, height: f64) -> Result<Window, String> {
+    pub fn new(title: &str, width: f64, height: f64) -> Result<Window, String> {
         // callback();
 
         // set the responder class delegate
@@ -112,9 +125,9 @@ impl Window {
         // println!("{:?}", (r, responder));
         // unsafe { msg_send![r, testHandler]; }
 
-        let events = Box::new(WindowEvents{
-            on_file_drop_callback: None,
-        });
+        // let events = Box::new(WindowEvents{
+        //     on_file_drop_callback: None,
+        // });
 
         unsafe {
             //            let _pool = NSAutoreleasePool::new(nil);
@@ -123,6 +136,9 @@ impl Window {
             window.makeKeyAndOrderFront_(nil);
             // window.setContentView_(view);
             window.makeFirstResponder_(view);
+
+            let nstitle = NSString::alloc(nil).init_str(title);
+            window.setTitle_(nstitle);
 
             let app = NSApp();
             app.setActivationPolicy_(NSApplicationActivationPolicyRegular);

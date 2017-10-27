@@ -1,17 +1,18 @@
 extern crate tinyui;
 use tinyui::Window;
-use tinyui::{ App, Point, Size, Label, Rect, Slider, SliderType, ButtonBuilder, Button, ButtonStyle, EventHandler, Event };
+use tinyui::{ App, Point, Size, Label, Rect, SliderBuilder, Slider,
+    SliderStyle, ButtonBuilder, Button, ButtonStyle, EventHandler, Event, WindowBuilder, WindowStyle };
 
 const WIDTH: f64 = 480.;
 const HEIGHT: f64 = 320.;
 
 #[allow(dead_code)]
 struct MyWindow {
+    window: Window,
     label: Label,
     button: Button,
     slider: Slider,
     slider_label: Label,
-    window: Window,
 }
 
 impl EventHandler for MyWindow {
@@ -39,19 +40,28 @@ fn main() {
             text: "click me",
             style: ButtonStyle::Square,
             position: Rect::new(10., 50., 150., 50.)}.build(),
-        slider: Slider::new("my slider", 0.2, 0., 100., Rect{
-            origin: Point{ x:10., y:HEIGHT-80. },
-            size: Size{ width:40., height:150.}}),
+        slider: SliderBuilder {
+            id: "a slider",
+            value: 0.2,
+            min_value: 0.,
+            max_value: 100.,
+            style: SliderStyle::Circular,
+            position: Rect {
+                origin: Point{ x:10., y:HEIGHT-80. },
+                size: Size{ width:40., height:150.}
+            }}.build(),
         slider_label: Label::new("0.1", Rect::new(25., HEIGHT-230., 40., 150.)),
-        window: Window::new(WIDTH, HEIGHT).unwrap(),
+        window: WindowBuilder {
+            title: "Window Controls Example",
+            style: WindowStyle::Default,
+            size: Size { width: WIDTH, height: HEIGHT },
+        }.build(),
     };
 
-    app.window.set_title("Window Controls");
     app.label.attach(&mut app.window);
     app.button.attach(&mut app.window);
     app.slider.attach(&mut app.window);
     app.slider_label.attach(&mut app.window);
-    app.slider.set_slider_type(SliderType::Circular);
 
     app.window.set_handler(app);
 
