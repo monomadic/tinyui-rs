@@ -12,6 +12,7 @@ use EventHandler;
 use Handler;
 use Event;
 use platform::platform::responder::send_event;
+use platform::platform::utils::*;
 
 use std::cell::RefCell;
 use std::os::raw::c_void;
@@ -29,12 +30,17 @@ pub enum SliderType {
 
 use std;
 extern "C" fn onSliderMove(this: &Object, _cmd: Sel, target: id) {
+    let name = unsafe { 
+        let ptr:u64 = *this.get_ivar("_name");
+        nsstring_decode(ptr as id)
+    };
+
     let value = unsafe { msg_send![target, value] };
-    send_event(target, Event::SliderUpdated(value));
+    send_event(target, Event::SliderUpdated(name, value));
 }
 
 impl Slider {
-    pub fn new(value:f32, min:f32, max:f32, position:Rect) -> Self {
+    pub fn new(name: &str, value:f32, min:f32, max:f32, position:Rect) -> Self {
         
         // singleton class definition
         use std::sync::{Once, ONCE_INIT};
@@ -44,6 +50,8 @@ impl Slider {
         INIT.call_once(|| unsafe {
             let superclass = Class::get("NSObject").expect("slider - NSObject to exist");
             let mut decl = ClassDecl::new("SliderResponder", superclass).expect("slider - responder to declare");
+
+            decl.add_ivar::<u64>("_name");
 
             decl.add_method(sel!(onMouseMove:),
                 onSliderMove as extern fn(this: &Object, _: Sel, _: id));
@@ -59,6 +67,9 @@ impl Slider {
             msg_send![slider, setMinimumValue:min];
             msg_send![slider, setMaximumValue:max];
             msg_send![slider, setValue:value];
+
+            let objc_text = NSString::alloc(nil).init_str(name);
+            (*responder).set_ivar("_name", objc_text as u64);
 
             msg_send![slider, setTarget:responder];
             msg_send![slider, setAction:sel!(onMouseMove:)];

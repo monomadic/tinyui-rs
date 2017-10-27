@@ -13,6 +13,7 @@ use EventHandler;
 use Handler;
 use Event;
 use platform::platform::responder::send_event;
+use platform::platform::utils::*;
 
 use std::cell::RefCell;
 use std::os::raw::c_void;
@@ -20,24 +21,6 @@ use std::os::raw::c_void;
 #[derive(Copy, Clone)]
 pub struct Button {
     id: id,
-}
-
-pub fn print_nsstring(str: *mut Object) {
-    use std::ffi::CStr;
-    unsafe {
-        let cstr: *const std::os::raw::c_char = msg_send![str, UTF8String];
-        let rstr = CStr::from_ptr(cstr).to_string_lossy().into_owned();
-        println!("{}", rstr);
-    }
-}
-
-pub fn nsstring_decode(str: *mut Object) -> String {
-    use std::ffi::CStr;
-    unsafe {
-        let cstr: *const std::os::raw::c_char = msg_send![str, UTF8String];
-        let rstr = CStr::from_ptr(cstr).to_string_lossy().into_owned();
-        rstr
-    }
 }
 
 use std;

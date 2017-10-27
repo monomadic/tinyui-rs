@@ -15,13 +15,23 @@ struct App {
 impl EventHandler for App {
     fn handle(&mut self, event: Event) {
         println!("-- event: {:?}", event);
+
+        match event {
+            Event::ButtonClicked(name) => {
+                match name.as_str() {
+                    "green button" => self.button.set_text("clicked me"),
+                    _ => ()
+                }
+            },
+            _ => ()
+        }
     }
 }
 
 fn main() {
     let mut label = Label::new("hello", Rect::new(10., 10., 300., 20.));
-    let mut button = Button::new("gummo button", "hello", Rect::new(180., 50., 60., 20.));
-    let mut slider = Slider::new(0.2, 0., 100., Rect{
+    let mut button = Button::new("green button", "green", Rect::new(180., 50., 60., 20.));
+    let mut slider = Slider::new("my slider", 0.2, 0., 100., Rect{
         origin: Point{ x:10., y:HEIGHT-40. },
         size: Size{ width:40., height:150.},
     });

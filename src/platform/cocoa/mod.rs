@@ -7,3 +7,6 @@ pub mod slider;
 pub mod webview;
 
 mod responder;
+
+pub mod utils;
+use self::utils::*;
