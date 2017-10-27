@@ -77,18 +77,10 @@ impl Button {
             let superclass = Class::get("NSObject").unwrap();
             let mut decl = ClassDecl::new("ButtonResponder", superclass).unwrap();
 
-            // decl.add_ivar::<String>("ButtonState");
             decl.add_ivar::<u64>("_name");
-
-            // extern fn objc_set_name(this: &mut Object, _cmd: Sel, ptr: u64) {
-            //     unsafe {this.set_ivar("_name", ptr);}
-            // }
 
             decl.add_method(sel!(onButtonClick:),
                 onButtonClick as extern fn(this: &Object, _: Sel, _: id));
-
-            // decl.add_method(sel!(setName:),
-            //     objc_set_name as extern fn(&mut Object, Sel, u64));
 
             RESPONDER_CLASS = decl.register();
         });

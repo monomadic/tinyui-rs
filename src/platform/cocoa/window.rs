@@ -1,11 +1,10 @@
 #![allow(dead_code)]
 
 use cocoa::base::{ id, nil };
-use std::os::raw::c_void;
 use std::cell::RefCell;
 
 use cocoa::base::{ NO, YES };
-use cocoa::foundation::{ NSString, NSRect, NSSize, NSPoint, NSAutoreleasePool };
+use cocoa::foundation::{ NSString, NSRect, NSSize, NSPoint };
 use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask, NSClosableWindowMask, NSResizableWindowMask, NSBackingStoreBuffered, NSRunningApplication,
                      NSApplicationActivateIgnoringOtherApps, NSApplicationActivationPolicyRegular, NSFilenamesPboardType };
 
@@ -16,9 +15,6 @@ use Rect;
 pub struct Window {
     pub nswindow: id,
     pub nsview: id,
-    // handler: &'a H,
-    // events: Box<WindowEvents>,
-    // handler: EventHandler,
 }
 
 use Event;
@@ -36,9 +32,9 @@ impl EventHandler for Handler {
     }
 }
 
-pub struct WindowEvents {
-    pub on_file_drop_callback: Option<RefCell<Box<FnMut(String)>>>,
-}
+// pub struct WindowEvents {
+//     pub on_file_drop_callback: Option<RefCell<Box<FnMut(String)>>>,
+// }
 
 // impl Drop for Window {
 //     fn drop(&mut self) {
@@ -46,18 +42,18 @@ pub struct WindowEvents {
 //     }
 // }
 
-impl WindowEvents {
-    pub fn on_mouse_down(&mut self) {
-        println!("Yaaaas!!");
-    }
+// impl WindowEvents {
+//     pub fn on_mouse_down(&mut self) {
+//         println!("Yaaaas!!");
+//     }
 
-    pub fn on_file_drop(&mut self, path: String) {
-        if let Some(ref mut callback) = self.on_file_drop_callback {
-            let ref mut file_drop = *(callback.borrow_mut());
-            file_drop(path);
-        }
-    }
-}
+//     pub fn on_file_drop(&mut self, path: String) {
+//         if let Some(ref mut callback) = self.on_file_drop_callback {
+//             let ref mut file_drop = *(callback.borrow_mut());
+//             file_drop(path);
+//         }
+//     }
+// }
 
 pub enum WindowStyle {
     Default,
@@ -86,30 +82,10 @@ impl Window {
 
     /// Create a new Window from scratch.
     pub fn new(title: &str, width: f64, height: f64) -> Result<Window, String> {
-        // callback();
 
         // set the responder class delegate
         use platform::platform::responder::*;
         let responder: id = unsafe { msg_send![get_window_responder_class(), new] };
-
-        // handler.handle();
-        // let handler_ptr: *mut c_void = &mut handler as *mut _ as *mut c_void;
-        // unsafe { msg_send![responder, setEventHandler: handler_ptr]; }
-
-        // set_event_handler_contained(responder, Handler{ handler: Box::new(handler) });
-
-        // let h = Holder(handler);
-        // unsafe {
-        //     // Straight-up lie to the compiler: "yeah, this is static"
-        //     static_state = std::mem::transmute(&h);
-        //     // c_api(my_callback_impl);
-        //     msg_send![responder, setEventHandler: static_state];
-        //     static_state = 0 as *mut _;
-        // }
-
-        // test
-        // println!("{:?}", responder);
-        // unsafe { msg_send![responder, testHandler]; }
 
         let window = unsafe { NSWindow::alloc(nil)
             .initWithContentRect_styleMask_backing_defer_(NSRect::new(NSPoint::new(0., 0.),
@@ -120,21 +96,11 @@ impl Window {
 
         let view = unsafe { NSWindow::contentView(window) };
 
-        unsafe { msg_send![window, setDelegate:responder] };
-        // let r: id = unsafe { msg_send![window, delegate] };
-        // println!("{:?}", (r, responder));
-        // unsafe { msg_send![r, testHandler]; }
-
-        // let events = Box::new(WindowEvents{
-        //     on_file_drop_callback: None,
-        // });
-
         unsafe {
-            //            let _pool = NSAutoreleasePool::new(nil);
+            msg_send![window, setDelegate:responder];
 
-            window.setAcceptsMouseMovedEvents_(YES); // msg_send![window, setAcceptsMouseMovedEvents: YES];
+            window.setAcceptsMouseMovedEvents_(YES);
             window.makeKeyAndOrderFront_(nil);
-            // window.setContentView_(view);
             window.makeFirstResponder_(view);
 
             let nstitle = NSString::alloc(nil).init_str(title);
@@ -151,6 +117,7 @@ impl Window {
             window.center();
 
             use cocoa::foundation::NSArray;
+
             // register for drag and drop operations.
             msg_send![window,
                 registerForDraggedTypes:NSArray::arrayWithObject(nil, NSFilenamesPboardType)];
@@ -159,13 +126,10 @@ impl Window {
         Ok(Window {
             nswindow: window,
             nsview: view,
-            // events: events,
-            // handler: Box::new(),
         })
     }
 
     pub fn make_resizable(&mut self) {
-        // make resizable
         unsafe { self.nswindow.setStyleMask_(self.nswindow.styleMask() | NSResizableWindowMask) };
     }
 
@@ -198,40 +162,4 @@ impl Window {
     pub fn bounds(&self) -> Rect {
         Rect::from_nsrect(unsafe { NSView::bounds(self.nsview) })
     }
-
-   // /// Attach a Window class to an existing window.
-   // pub fn attach_to<EH:EventHandler>(host_nsview: *mut c_void, handler: &H) -> Result<Window, String> {
-   //      let host_window = unsafe { msg_send![host_nsview as id, window] };
-   //      // let host_nsview = unsafe { NSWindow::contentView(host_window) };
-
-   //      let child_nsview = unsafe { NSView::alloc(nil) };
-   //      let child_view = unsafe { child_nsview.initWithFrame_(NSView::frame(host_nsview as id)) };
-   //      unsafe { NSView::addSubview_((host_nsview as id), child_view) }
-
-   //      Ok(Window {
-   //          events: Box::new(WindowEvents{
-   //              on_file_drop_callback: None,
-   //          }),
-   //          nswindow: host_window,
-   //          nsview: host_nsview as id,
-   //          handler: handler,
-   //      })
-   // }
-
-    // pub fn on_file_drop(&mut self, callback: RefCell<Box<FnMut(String)>>) {
-    //     self.events.on_file_drop_callback = Some(callback)
-    // }
-
-   // unsafe fn prepare_for_display(&mut window: Window) {
-   //     // self.view.set_wants_best_resolution_opengl_surface(YES);
-
-   //     msg_send![self.nswindow, setAcceptsMouseMovedEvents: YES];
-   //     msg_send![self.nswindow, makeKeyAndOrderFront: nil];
-   //     msg_send![self.nswindow, setContentView: self.nsview];
-   //     msg_send![self.nswindow, makeFirstResponder: self.nsview];
-   //     msg_send![self.nswindow, center];
-
-   //     // need to [NSApp activateIgnoringOtherApps:YES]; and find out what it does.
-   // }
-
 }

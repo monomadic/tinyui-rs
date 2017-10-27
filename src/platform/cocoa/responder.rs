@@ -9,7 +9,7 @@ use objc::declare::ClassDecl;
 
 use std::os::raw::c_void;
 
-use platform::platform::window::WindowEvents;
+// use platform::platform::window::WindowEvents;
 
 extern "C" fn setViewController(this: &mut Object, _: Sel, controller: *mut c_void) {
     unsafe {
@@ -80,8 +80,8 @@ extern fn perform_drag_operation(this: &Object, _: Sel, sender: id) -> BOOL {
         // let mut winevents = (*events).borrow_mut();
         // (*winevents).on_file_drop(path);
 
-        let events: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
-        (*events).on_file_drop(path);
+        // let events: &mut Box<WindowEvents> = unsafe { &mut *(event_ptr as *mut Box<WindowEvents>) };
+        // (*events).on_file_drop(path);
     };
 
     YES
