@@ -42,15 +42,15 @@ fn main() {
             position: Rect::new(10., 50., 150., 50.)}.build(),
         slider: SliderBuilder {
             id: "a slider",
-            value: 0.2,
-            min_value: 0.,
-            max_value: 100.,
+            value: 0.5,
+            min_value: 0.0,
+            max_value: 1.0,
             style: SliderStyle::Circular,
             position: Rect {
                 origin: Point{ x:10., y:HEIGHT-80. },
-                size: Size{ width:40., height:150.}
+                size: Size{ width:40., height:40.}
             }}.build(),
-        slider_label: Label::new("0.1", Rect::new(25., HEIGHT-230., 40., 150.)),
+        slider_label: Label::new("0.5", Rect::new(25., HEIGHT-230., 40., 150.)),
         window: WindowBuilder {
             title: "Window Controls Example",
             style: WindowStyle::Default,

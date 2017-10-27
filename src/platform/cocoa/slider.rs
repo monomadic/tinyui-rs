@@ -24,15 +24,26 @@ pub struct Slider {
 
 #[derive(Copy, Clone)]
 pub enum SliderStyle {
+
+    // A bar-shaped slider automatically determines whether it’s horizontal or vertical by
+    // the shape of its containing rectangle. If the slider is wider than it is tall, it’s
+    // horizontal. Otherwise, it’s vertical. Use the initWithFrame: method to initialize a
+    // slider, passing in an NSRect with the size and shape you want.
     Linear = 0,
+
+    // For a circular slider, you must pass an NSRect at least large enough to contain the
+    // control. For a regular circular slider, the NSRect must be at least 28 by 30 pixels.
+    // For a small circular slider, it must be at least 18 by 20 pixels. Add 4 pixels in each
+    // dimension if your slider has tick marks.
     Circular = 1,
+
 }
 
 pub struct SliderBuilder {
     pub id: &'static str,
-    pub value: f32,
-    pub min_value: f32,
-    pub max_value: f32,
+    pub value: f64,
+    pub min_value: f64,
+    pub max_value: f64,
     pub style: SliderStyle,
     pub position: Rect,
 }
@@ -50,12 +61,12 @@ extern "C" fn onSliderMove(this: &Object, _cmd: Sel, target: id) {
         nsstring_decode(ptr as id)
     };
 
-    let value = unsafe { msg_send![target, value] };
-    send_event(target, Event::SliderUpdated(name, value));
+    let value:f64 = unsafe { msg_send![target, doubleValue] };
+    send_event(target, Event::SliderUpdated(name, value as f32));
 }
 
 impl Slider {
-    pub fn new(name: &str, value:f32, min:f32, max:f32, style: SliderStyle, position:Rect) -> Self {
+    pub fn new(name: &str, value:f64, min:f64, max:f64, style: SliderStyle, position:Rect) -> Self {
         
         // singleton class definition
         use std::sync::{Once, ONCE_INIT};
@@ -77,13 +88,20 @@ impl Slider {
         let responder: id = unsafe { msg_send![RESPONDER_CLASS, new] };
         let slider = unsafe {
             let slider:id = msg_send![class("NSSlider"), alloc];
-            msg_send![slider, initWithFrame:position.to_nsrect()];
+            let slider:id = msg_send![slider, initWithFrame:position.to_nsrect()];
+
+            msg_send![slider, setSliderType:style as u32];
 
             msg_send![slider, setMinimumValue:min];
             msg_send![slider, setMaximumValue:max];
             msg_send![slider, setValue:value];
+            // msg_send![slider, setContinuous:true];
+            // msg_send![slider, setNumberOfTickMarks:10];
 
-            msg_send![slider, setSliderType:style as u32];
+            // use Color;
+            // let layer:id = msg_send![slider, layer];
+            // msg_send![layer, setBackgroundColor:Color::red().nscolor()];
+            // msg_send![slider, setTrackFillColor:Color::red().nscolor()];
 
             let objc_text = NSString::alloc(nil).init_str(name);
             (*responder).set_ivar("_name", objc_text as u64);

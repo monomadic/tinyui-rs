@@ -56,7 +56,6 @@ impl ButtonBuilder {
 
 use std;
 extern "C" fn onButtonClick(this: &Object, _cmd: Sel, target: id) {
-
     let name = unsafe { 
         let ptr:u64 = *this.get_ivar("_name");
         nsstring_decode(ptr as id)
