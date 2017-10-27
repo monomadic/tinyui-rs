@@ -23,6 +23,24 @@ pub struct Button {
     id: id,
 }
 
+#[derive(Copy, Clone)]
+pub enum ButtonStyle {
+    None = 0,
+    Rounded = 1,
+    Square = 2,
+    Disclosure = 5,
+    ShadowlessSquare = 6,
+    Circular = 7,
+    TexturedSquare = 8,
+    Help = 9,
+    SmallSquare = 10,
+    TexturedRounded = 11,
+    RoundedRect = 12,
+    Recessed = 13,
+    RoundedDisclosure = 14,
+    Inline = 15,
+}
+
 use std;
 extern "C" fn onButtonClick(this: &Object, _cmd: Sel, target: id) {
 
@@ -35,7 +53,7 @@ extern "C" fn onButtonClick(this: &Object, _cmd: Sel, target: id) {
 }
 
 impl Button {
-    pub fn new(name: &str, text: &str, position: Rect) -> Self {
+    pub fn new(name: &str, text: &str, style: ButtonStyle, position: Rect) -> Self {
         
         // singleton class definition
         use std::sync::{Once, ONCE_INIT};
@@ -66,6 +84,8 @@ impl Button {
         let button = unsafe {
             let button = NSButton::alloc(nil).initWithFrame_(position.to_nsrect());
             button.setTitle_(NSString::alloc(nil).init_str(text));
+
+            msg_send![button, setBezelStyle:style as u32];
 
             msg_send![button, setTarget:responder];
             msg_send![button, setAction:sel!(onButtonClick:)];

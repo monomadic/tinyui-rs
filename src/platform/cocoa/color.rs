@@ -21,6 +21,10 @@ impl Color {
         Color { id: unsafe{ msg_send![class("NSColor"), blackColor] } }
     }
 
+    pub fn white() -> Color {
+        Color { id: unsafe{ msg_send![class("NSColor"), whiteColor] } }
+    }
+
     pub fn clear() -> Color {
         Color { id: unsafe{ msg_send![class("NSColor"), clearColor] } }
     }

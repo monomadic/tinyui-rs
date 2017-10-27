@@ -2,7 +2,13 @@
 
 NOTE: This code is not ready for use yet. It can create basic things but the API changes frequently.
 
-A tiny native windowing and GUI library for rust. Currently supports MacOS with other platforms in the future.
+A tiny native windowing and GUI library for rust. Currently supports MacOS with other platforms in the future (any help on this would be appreciated!).
+
+Major goals are:
+- **Simple Rust** - code should not use complicated rust features unless absolutely necessary. Should be usable by newcomers to rust to create simple and expressive guis. Apps are simple rust structs, events are simple enums.
+- **Native** - event driven, using native UI controls.
+- **Small Code*** - no complicated examples with pages of abstracted text. The example code is what you really get.
+- **Webkit** - optionally, webkit support is deep within the framework, so you can create an electron-like gui trivially (but not as garbage).
 
 It does NOT use a render loop like winit and almost all other gui frameworks with rust do, but works closer with the native operating systems render loop and uses callbacks, so it is far better on cpu and lends itself more to long-running applications you don't want sucking your cpu in the background. It also feels a billion (quantified, honest) times nicer to work with than something like winit, which is turning into a slushy garbage dump as it progresses :D
 
