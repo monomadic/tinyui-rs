@@ -23,8 +23,8 @@ impl EventHandler for MyWindow {
         match event {
             Event::ButtonClicked(name) => {
                 match name.as_str() {
-                    "a button" => self.button.set_text("clicked me"),
-                    "b button" => self.button_on.set_text("clicked me too"),
+                    "a button" => { self.button.set_text("clicked me"); self.window.set_background_color(tinyui::Color::red()) },
+                    "b button" => { self.button_on.set_text("clicked me too") ; self.window.set_background_color(tinyui::Color::green()) },
                     _ => ()
                 }
             },
