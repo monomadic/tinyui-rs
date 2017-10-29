@@ -1,12 +1,12 @@
 extern crate tinyui;
-use tinyui::{ Color, WebView, EventHandler, Event, WindowBuilder, WindowStyle, Size };
+use tinyui::{ App, Color, WebView, EventHandler, Event, WindowBuilder, WindowStyle, Size };
 
 const WIDTH: f64 = 480.;
 const HEIGHT: f64 = 320.;
 
-struct App {}
+struct WebviewApp {}
 
-impl EventHandler for App {
+impl EventHandler for WebviewApp {
     fn handle(&mut self, event: Event) {
         println!("-- event: {:?}", event);
         match event {
@@ -16,13 +16,14 @@ impl EventHandler for App {
                     _ => (),
                 }
             }
+            Event::WindowWillClose => { App::quit(); },
             _ => (),
         }
     }
 }
 
 fn main() {
-    let app = App{};
+    let app = WebviewApp{};
 
     let mut window = WindowBuilder {
             title: "Webkit Example",
@@ -30,7 +31,7 @@ fn main() {
             size: Size { width: WIDTH, height: HEIGHT },
         }.build();
 
-    window.set_background_color(Color::white());
+    window.set_background_color(Color::black());
 
     let mut webview = WebView::new(window.frame());
     webview.load_html_string(include_str!("vst-webkit/src/index.html"));

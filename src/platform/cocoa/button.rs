@@ -79,7 +79,7 @@ impl Button {
             decl.add_ivar::<u64>("_name");
 
             decl.add_method(sel!(onButtonClick:),
-                onButtonClick as extern fn(this: &Object, _: Sel, _: id));
+                onButtonClick as extern fn(&Object, Sel, id));
 
             RESPONDER_CLASS = decl.register();
         });

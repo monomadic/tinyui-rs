@@ -1,9 +1,6 @@
 #![allow(dead_code)]
 
-use cocoa::base::{ id, nil };
-use std::cell::RefCell;
-
-use cocoa::base::{ NO, YES };
+use cocoa::base::{ id, nil, NO, YES };
 use cocoa::foundation::{ NSString, NSRect, NSSize, NSPoint };
 use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask, NSClosableWindowMask, NSResizableWindowMask, NSBackingStoreBuffered, NSRunningApplication,
                      NSApplicationActivateIgnoringOtherApps, NSApplicationActivationPolicyRegular, NSFilenamesPboardType };

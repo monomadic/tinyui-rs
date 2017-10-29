@@ -2,6 +2,7 @@
 #![allow(unused_variables)]
 #![allow(unused_imports)]
 
+use cocoa;
 use cocoa::base::{ id, nil, NO, YES, class };
 use cocoa::foundation::{ NSString };
 use cocoa::appkit::{ NSColor };
@@ -75,33 +76,49 @@ pub fn wk_script_message_handler_class() -> &'static Class {
     Class::get("NotificationScriptMessageHandler").expect("NotificationScriptMessageHandler to be valid.")
 }
 
+pub fn navigation_delegate_class() -> &'static Class {
+    use std::sync::{Once, ONCE_INIT};
+
+    static REGISTER_CUSTOM_SUBCLASS: Once = ONCE_INIT;
+    REGISTER_CUSTOM_SUBCLASS.call_once(|| {
+        let superclass = Class::get("WKWebView").expect("WKWebView to be available");
+        let mut decl = ClassDecl::new("NavigationDelegate", superclass).expect("WKWebView to be subclassable");
+
+        decl.add_protocol(Protocol::get("WKNavigationDelegate").expect("WKNavigationDelegate protocol to exist"));
+
+        extern fn didCommitNavigation(this: &Object, _cmd: Sel, webview: id, navigation: id) {
+            send_event(webview, Event::WebViewStartedLoading);
+        }
+        extern fn didFinishNavigation(this: &Object, _cmd: Sel, webview: id, navigation: id) {
+            send_event(webview, Event::WebViewFinishedLoading);
+        }
+
+        unsafe {
+            decl.add_method(sel!(webView:didCommitNavigation:),
+                didCommitNavigation as extern fn(&Object, Sel, id, id));
+            decl.add_method(sel!(webView:didFinishNavigation:),
+                didFinishNavigation as extern fn(&Object, Sel, id, id));
+        }
+
+        decl.register();
+    });
+
+    Class::get("NavigationDelegate").expect("NavigationDelegate to be valid.")
+}
+
 impl WebView {
     pub fn new(position: Rect) -> Self {
         unsafe {
 
-            // Delegate
-
-            // let protocols = Protocol::protocols();
-            // for protocol in protocols.iter() {
-            //     println!("{:?}", protocol.name());
-            // }
-
+            // WKUserContentController
             let cls = wk_script_message_handler_class();
-            let controller = {
+            let scripthandler = {
                 let obj: *mut Object = msg_send![cls, alloc];
                 let obj: *mut Object = msg_send![obj, init];
                 obj
             };
 
-            // WKUserContentController
-            // let cls = Class::get("WKUserContentController").expect("WKUserContentController to exist");
-            // let controller = {
-            //     let obj: *mut Object = msg_send![cls, alloc];
-            //     let obj: *mut Object = msg_send![obj, init];
-            //     obj
-            // };
-
-            msg_send![controller, addScriptMessageHandler:controller name:NSString::alloc(nil).init_str("notification")];
+            msg_send![scripthandler, addScriptMessageHandler:scripthandler name:NSString::alloc(nil).init_str("notification")];
 
             // WKWebViewConfiguration
             let cls = Class::get("WKWebViewConfiguration").expect("WKWebViewConfiguration to exist");
@@ -111,12 +128,11 @@ impl WebView {
                 obj
             };
 
-            // (*configuration).set_ivar("userContentController", controller);
-            // configuration.userContentController = controller;
-            msg_send![configuration, setUserContentController:controller];
+            // configuration.userContentController = scripthandler;
+            msg_send![configuration, setUserContentController:scripthandler];
 
             // WKWebView
-            let cls = Class::get("WKWebView").unwrap();
+            let cls = Class::get("WKWebView").expect("WKWebView to exist");
             let webview = {
                 let obj: *mut Object = msg_send![cls, alloc];
                 let obj: *mut Object = msg_send![obj,
@@ -125,6 +141,16 @@ impl WebView {
                 obj
             };
 
+            // WKNavigationDelegate
+            let cls = navigation_delegate_class();
+            let navigation_delegate = {
+                let obj: *mut Object = msg_send![cls, alloc];
+                let obj: *mut Object = msg_send![obj, init];
+                obj
+            };
+            msg_send![webview, setNavigationDelegate:navigation_delegate];
+
+            // make window transparent
             msg_send![webview, setOpaque:NO];
             msg_send![webview, setBackgroundColor:Color::clear().nscolor()];
 
@@ -146,12 +172,16 @@ impl WebView {
         unsafe {
             let cls = Class::get("NSURL").unwrap();
             let nsurl = {
-                let obj: *mut Object = msg_send![cls, fileURLWithPath:NSString::alloc(nil).init_str("file:///localhost/")];
+                let obj: *mut Object = msg_send![cls, fileURLWithPath:NSString::alloc(nil).init_str("")];
                 obj
             };
+
             msg_send![self.id,
                 loadHTMLString:NSString::alloc(nil).init_str(html)
                 baseURL:nsurl];
+                
+            msg_send![self.id, setOpaque:NO];
+            msg_send![self.id, setBackgroundColor:Color::clear().nscolor()];
         }
     }
 

@@ -3,7 +3,6 @@ use cocoa::appkit::NSTextField;
 use cocoa::foundation::{ NSString };
 use Rect;
 use Window;
-use EventHandler;
 
 #[derive(Copy, Clone)]
 pub struct Label {

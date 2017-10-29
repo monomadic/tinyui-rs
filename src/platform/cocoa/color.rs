@@ -1,4 +1,4 @@
-use cocoa::base::{ id, nil, class };
+use cocoa::base::{ id, class };
 
 pub struct Color {
     id: id,
@@ -13,8 +13,8 @@ impl Color {
         Color { id: unsafe{ msg_send![class("NSColor"), greenColor] } }
     }
 
-    pub fn dark_black() -> Color {
-        Color { id: unsafe{ msg_send![class("NSColor"), charcoalColor] } }
+    pub fn system_gray() -> Color {
+        Color { id: unsafe{ msg_send![class("NSColor"), systemGrayColor] } }
     }
 
     pub fn black() -> Color {
