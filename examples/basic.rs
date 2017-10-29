@@ -13,6 +13,10 @@ struct MyWindow {
 impl EventHandler for MyWindow {
     fn handle(&mut self, event: Event) {
         println!("-- event: {:?}", event);
+        match event {
+            Event::WindowWillClose => App::quit(),
+            _ => (),
+        }
     }
 }
 
@@ -27,6 +31,5 @@ fn main() {
 
     app.window.set_handler(app);
 
-    let app = App::run(); // not necessary on vsts.
-    app.terminate();
+    App::run(); // not necessary on vsts.
 }

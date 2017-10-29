@@ -16,7 +16,7 @@ impl EventHandler for WebviewApp {
                     _ => (),
                 }
             }
-            Event::WindowWillClose => { App::quit(); },
+            Event::WindowWillClose => App::quit(),
             _ => (),
         }
     }
