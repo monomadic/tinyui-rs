@@ -19,6 +19,7 @@ pub enum Event {
 
     /// A notifier was sent from a WKWebView object.
     WebEvent(String, String), // change to String, String
+    WebViewContentRecieved,
     WebViewStartedLoading,
     WebViewFinishedLoading,
 

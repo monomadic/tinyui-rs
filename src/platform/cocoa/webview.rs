@@ -55,14 +55,6 @@ pub fn wk_script_message_handler_class() -> &'static Class {
 
             let webview = unsafe { msg_send![message, webView] };
             send_event(webview, Event::WebEvent(name, body));
-
-            // match name.as_str() {
-            //     "notification" => {
-            //         let webview = unsafe { msg_send![message, webView] };
-            //         send_event(webview, Event::WebEvent(name, body));
-            //     },
-            //     _ => {}
-            // }
         }
 
         unsafe {
@@ -87,7 +79,7 @@ pub fn navigation_delegate_class() -> &'static Class {
         decl.add_protocol(Protocol::get("WKNavigationDelegate").expect("WKNavigationDelegate protocol to exist"));
 
         extern fn didCommitNavigation(this: &Object, _cmd: Sel, webview: id, navigation: id) {
-            send_event(webview, Event::WebViewStartedLoading);
+            send_event(webview, Event::WebViewContentRecieved);
         }
         extern fn didFinishNavigation(this: &Object, _cmd: Sel, webview: id, navigation: id) {
             send_event(webview, Event::WebViewFinishedLoading);
