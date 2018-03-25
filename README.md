@@ -19,3 +19,23 @@ Control names are stringly typed; this isn't likely to change in the future as t
 Lots of inspiration taken from https://deterministic.space/elegant-apis-in-rust.html#what-makes-an-api-elegant
 
 Supports common controls like buttons and labels, and webkit (soon opengl) controls, natively, with absolute minimal dependencies. The library usage is loosely based on ggez.
+
+## Usage
+
+To compile a basic example, run:
+```bash
+cargo run --example window
+```
+
+To build and install the VST example:
+```bash
+cd examples/vst-webkit
+bash contrib/vst-mac-bundle.sh
+```
+
+To run the VST example's GUI in standalone mode:
+```bash
+cd examples/vst-webkit
+cargo run --bin standalone
+```
+

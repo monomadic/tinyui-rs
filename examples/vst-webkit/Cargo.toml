@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Rob Saunders <rob@wearebrandnew.com>"]
 
 [dependencies]
-vst2 = { git = "https://github.com/rust-dsp/rust-vst" }
+vst = { git = "https://github.com/rust-dsp/rust-vst" }
 tinyui = { path = "../../" }
 
 [lib]
@@ -13,3 +13,6 @@ crate-type = ["cdylib"]
 
 # [profile.release]
 # lto = true
+
+[[bin]]
+name = "standalone"

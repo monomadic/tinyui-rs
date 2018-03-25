@@ -92,6 +92,16 @@ impl Window {
         set_event_handler_contained(responder, Handler{ handler: Box::new(handler) });
     }
 
+    pub fn new_with_parent(parent: *mut ::std::os::raw::c_void) -> Result<Window, String> {
+        use cocoa::base::{id};
+        use objc::runtime::{Object};
+
+        Ok(Window {
+            nswindow: unsafe{ msg_send![parent as *mut Object, window] },
+            nsview: parent as id,
+        })
+    }
+
     /// Create a new Window from scratch.
     pub fn new(title: &str, width: f64, height: f64) -> Result<Window, String> {
 

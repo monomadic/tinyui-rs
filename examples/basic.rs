@@ -5,7 +5,6 @@ use tinyui::{ App, Size, EventHandler, Event, WindowBuilder, WindowStyle };
 const WIDTH: f64 = 480.;
 const HEIGHT: f64 = 320.;
 
-#[allow(dead_code)]
 struct MyWindow {
     window: Window,
 }
