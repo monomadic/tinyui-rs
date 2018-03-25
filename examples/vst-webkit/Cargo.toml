@@ -16,3 +16,4 @@ crate-type = ["cdylib"]
 
 [[bin]]
 name = "standalone"
+path = "./src/standalone.rs"
