@@ -14,6 +14,5 @@ fn main() {
     }.build();
 
     let _plugin_window = ui::PluginWindow::new(window);
-
     let _ = App::run(); // not necessary on vsts.
 }

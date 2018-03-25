@@ -28,7 +28,7 @@ impl Editor for DigiDist {
     // fn close(&mut self) { self.app = None }
 
     fn open(&mut self, window: *mut std::os::raw::c_void) {
-        let mut window = Window::new_with_parent(window).unwrap();
+        let window = Window::new_with_parent(window).unwrap();
         ui::PluginWindow::new(window);
     }
 }

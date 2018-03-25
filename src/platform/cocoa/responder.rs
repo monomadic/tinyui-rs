@@ -135,23 +135,23 @@ extern fn window_closed(this: &Object, _: Sel, sender: id) {
 
 // @property(readonly) BOOL acceptsFirstResponder;
 extern "C" fn acceptsFirstResponder(_: &Object, _: Sel) -> BOOL {
-    println!("acceptsFirstResponder() hit");
+    // println!("acceptsFirstResponder() hit");
     YES
 }
 
 // func acceptsFirstMouse(for event: NSEvent?) -> Bool
 extern "C" fn acceptsFirstMouse(_: &Object, _: Sel, theEvent: id) -> BOOL {
-    println!("acceptsFirstMouse() hit");
+    // println!("acceptsFirstMouse() hit");
     YES
 }
 
 extern "C" fn mouseEvent(this: &Object, _: Sel, mouseEvent: id) {
     use cocoa::appkit::NSEvent;
-    println!("NSEvent type: {:?}", unsafe { NSEvent::eventType(mouseEvent) });
+    // println!("NSEvent type: {:?}", unsafe { NSEvent::eventType(mouseEvent) });
 }
 
 extern fn did_become_active(this: &Object, _: Sel, _: id) {
-    println!("focused");
+    // println!("focused");
 }
 
 pub fn get_window_responder_class() -> *const Class {
