@@ -5,7 +5,8 @@ pub struct PluginWindow {
 }
 
 impl PluginWindow {
-    pub fn new(window: Window) -> Self {
+    pub fn new(mut window: Window) -> Self {
+        window.set_background_color(Color::red());
         Self {
             window: window,
         }
