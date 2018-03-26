@@ -13,11 +13,13 @@ const WIDTH: f64 = 480.;
 const HEIGHT: f64 = 320.;
 
 struct DigiDist {
+    window: Option<ui::PluginWindow>,
 }
 
 impl Default for DigiDist {
     fn default() -> DigiDist {
         DigiDist {
+            window: None,
         }
     }
 }
@@ -25,11 +27,10 @@ impl Editor for DigiDist {
     fn size(&self) -> (i32, i32) { (WIDTH as i32, HEIGHT as i32) }
     fn position(&self) -> (i32, i32) { (0, 0) }
     fn is_open(&mut self) -> bool { true }
-    // fn close(&mut self) { self.app = None }
+    fn close(&mut self) { self.window = None }
 
     fn open(&mut self, window: *mut std::os::raw::c_void) {
-        let window = Window::new_with_parent(window).unwrap();
-        ui::PluginWindow::new(window);
+        self.window = Some(ui::PluginWindow::new(Window::new_with_parent(window).unwrap()));
     }
 }
 
