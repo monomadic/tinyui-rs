@@ -2,7 +2,7 @@
 
 use cocoa::base::{ id, nil, NO, YES };
 use cocoa::foundation::{ NSString, NSRect, NSSize, NSPoint };
-use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSTitledWindowMask, NSClosableWindowMask, NSResizableWindowMask, NSBackingStoreBuffered, NSRunningApplication,
+use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSBackingStoreBuffered, NSRunningApplication, NSWindowStyleMask,
                      NSApplicationActivateIgnoringOtherApps, NSApplicationActivationPolicyRegular, NSFilenamesPboardType };
 
 use Color;
@@ -102,7 +102,7 @@ impl Window {
         let window = unsafe { NSWindow::alloc(nil)
             .initWithContentRect_styleMask_backing_defer_(NSRect::new(NSPoint::new(0., 0.),
                                                                       NSSize::new(width, height)),
-                                                          NSTitledWindowMask | NSClosableWindowMask,
+                                                          NSWindowStyleMask::NSTitledWindowMask | NSWindowStyleMask::NSClosableWindowMask,
                                                           NSBackingStoreBuffered,
                                                           NO) };
 
@@ -142,7 +142,7 @@ impl Window {
     }
 
     pub fn make_resizable(&mut self) {
-        unsafe { self.nswindow.setStyleMask_(self.nswindow.styleMask() | NSResizableWindowMask) };
+        unsafe { self.nswindow.setStyleMask_(self.nswindow.styleMask() | NSWindowStyleMask::NSResizableWindowMask) };
     }
 
     pub fn set_title(&mut self, title: &str) {
