@@ -12,7 +12,8 @@ pub struct PluginWindow {
 impl EventHandler for PluginWindow {
     fn handle(&mut self, event: Event) {
         match event {
-            Event::WindowWillClose => App::quit(),
+            // Event::WindowWillClose => App::quit(), // don't do this on a vst
+            Event::WindowWillClose => {},
             _ => (),
         }
     }
