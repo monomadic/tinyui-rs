@@ -63,7 +63,7 @@ fn main() {
             title: "Window Controls Example",
             style: WindowStyle::Default,
             size: Size { width: WIDTH, height: HEIGHT },
-        }.build(),
+        }.build().expect("window did not create correctly"),
     };
 
     // app.label.attach(&mut app.window);

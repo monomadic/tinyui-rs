@@ -11,8 +11,8 @@ fn main() {
         title: "Vst Plugin Example Standalone",
         style: WindowStyle::Default,
         size: Size { width: WIDTH, height: HEIGHT },
-    }.build();
+    }.build().expect("window to build correctly");
 
-    let _plugin_window = ui::PluginWindow::new(window);
-    let _ = App::run(); // not necessary on vsts.
+    let _ = ui::PluginWindow::new(window);
+    let _ = App::run(); // start a cocoa runloop. not necessary on vsts.
 }

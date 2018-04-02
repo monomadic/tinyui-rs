@@ -4,6 +4,7 @@ use tinyui::{ App, Color, WebView, EventHandler, Event, WindowBuilder, WindowSty
 const WIDTH: f64 = 480.;
 const HEIGHT: f64 = 320.;
 
+#[derive(Clone, Copy)]
 struct WebviewApp {}
 
 impl EventHandler for WebviewApp {
@@ -29,7 +30,7 @@ fn main() {
             title: "Webkit Example",
             style: WindowStyle::Default,
             size: Size { width: WIDTH, height: HEIGHT },
-        }.build();
+        }.build().expect("Window did not create correctly.");
 
     window.set_background_color(Color::black());
 

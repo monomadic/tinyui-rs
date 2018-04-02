@@ -7,6 +7,7 @@ use cocoa::appkit::{ NSApp, NSApplication, NSWindow, NSView, NSBackingStoreBuffe
 
 use Color;
 use Rect;
+use error::*;
 
 #[derive(Copy, Clone)]
 pub struct Window {
@@ -64,8 +65,8 @@ pub struct WindowBuilder {
 }
 
 impl WindowBuilder {
-    pub fn build(&self) -> Window {
-        Window::new(self.title, self.size.width, self.size.height).expect("window to build")
+    pub fn build(&self) -> Result<Window, TinyUIError> {
+        Ok(Window::new(self.title, self.size.width, self.size.height)?)
     }
 }
 
@@ -103,7 +104,7 @@ impl Window {
     }
 
     /// Create a new Window from scratch.
-    pub fn new(title: &str, width: f64, height: f64) -> Result<Window, String> {
+    pub fn new(title: &str, width: f64, height: f64) -> Result<Window, TinyUIError> {
 
         // set the responder class delegate
         use platform::platform::responder::*;

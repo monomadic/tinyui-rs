@@ -13,3 +13,6 @@ pub use platform::webview::*;
 
 mod events;
 pub use events::*;
+
+mod error;
+pub use error::*;
