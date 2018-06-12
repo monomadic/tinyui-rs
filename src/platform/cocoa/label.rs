@@ -1,6 +1,7 @@
 use cocoa::base::{ id, nil, NO };
 use cocoa::appkit::NSTextField;
 use cocoa::foundation::{ NSString };
+use Color;
 use Rect;
 use Window;
 
@@ -33,6 +34,10 @@ impl Label {
 
     pub fn set_text(&self, text: &str) {
         unsafe { self.id.setStringValue_(NSString::alloc(nil).init_str(text)) };
+    }
+
+    pub fn set_text_color(&self, color: Color) {
+        unsafe { msg_send!(self.id, setTextColor:color.nscolor() ) }
     }
 
     pub fn attach(&mut self, window: &mut Window) {

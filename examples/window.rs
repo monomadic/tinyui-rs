@@ -23,8 +23,16 @@ impl EventHandler for MyWindow {
         match event {
             Event::ButtonClicked(name) => {
                 match name.as_str() {
-                    "a button" => { self.button.set_text("clicked me"); self.window.set_background_color(tinyui::Color::red()) },
-                    "b button" => { self.button_on.set_text("clicked me too") ; self.window.set_background_color(tinyui::Color::green()) },
+                    "a button" => {
+                        self.button.set_text("clicked me");
+                        self.window.set_background_color(tinyui::Color::red());
+                        self.label.set_text_color(tinyui::Color::green());
+                    },
+                    "b button" => {
+                        self.button_on.set_text("clicked me too") ;
+                        self.window.set_background_color(tinyui::Color::green());
+                        self.label.set_text_color(tinyui::Color::red());
+                    },
                     _ => ()
                 }
             },
@@ -38,6 +46,8 @@ impl EventHandler for MyWindow {
 fn main() {
     let window_rect = Rect::new(0., 0., HEIGHT, WIDTH);
     let (top_half_rect, bottom_half_rect) = window_rect.split_horizontal();
+    let (top_half_left_rect, top_half_right_rect) = top_half_rect.split_vertical();
+    let (bottom_half_left_rect, bottom_half_right_rect) = bottom_half_rect.split_vertical();
 
     let mut app = MyWindow {
         label: Label::new("Cocoa Controls Demo", top_half_rect),
@@ -46,19 +56,19 @@ fn main() {
             value: 0.5,
             min_value: 0.0,
             max_value: 1.0,
-            style: SliderStyle::Circular,
-            position: top_half_rect}.build(),
-        slider_label: Label::new("0.5", top_half_rect),
+            style: SliderStyle::Linear,
+            position: bottom_half_left_rect}.build(),
+        slider_label: Label::new("0.5", bottom_half_right_rect),
         button: ButtonBuilder {
             id: "a button",
             text: "click me",
             style: ButtonStyle::Square,
-            position: bottom_half_rect.inset(10.) }.build(),
+            position: top_half_left_rect.inset(10.) }.build(),
         button_on: ButtonBuilder {
             id: "b button",
             text: "click me",
             style: ButtonStyle::Square,
-            position: top_half_rect.inset(10.) }.build(),
+            position: top_half_right_rect.inset(10.) }.build(),
         window: WindowBuilder {
             title: "Window Controls Example",
             style: WindowStyle::Default,
@@ -66,11 +76,11 @@ fn main() {
         }.build().expect("window did not create correctly"),
     };
 
-    // app.label.attach(&mut app.window);
+    app.label.attach(&mut app.window);
     app.button.attach(&mut app.window);
     app.button_on.attach(&mut app.window);
-    // app.slider.attach(&mut app.window);
-    // app.slider_label.attach(&mut app.window);
+    app.slider.attach(&mut app.window);
+    app.slider_label.attach(&mut app.window);
 
     app.window.set_handler(app);
 
