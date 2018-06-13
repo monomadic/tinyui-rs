@@ -9,4 +9,5 @@ crate-type = ["rlib"]
 
 [dependencies]
 objc = "0.2.2"
-cocoa = "0.14.0"
+cocoa = "0.15.0"
+core-graphics = "*"
