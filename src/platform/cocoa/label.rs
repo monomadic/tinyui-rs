@@ -2,6 +2,7 @@ use cocoa::base::{ id, nil, NO };
 use cocoa::appkit::NSTextField;
 use cocoa::foundation::{ NSString };
 use Color;
+use Font;
 use Rect;
 use Window;
 
@@ -39,6 +40,25 @@ impl Label {
     pub fn set_text_color(&self, color: Color) {
         unsafe { msg_send!(self.id, setTextColor:color.nscolor() ) }
     }
+
+    /// Set the font of a label
+    ///
+    /// # Arguments
+    ///
+    /// * `font` - A Font object specifiyng the font
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// app.label.set_font(tinyui::Font::init("Helvetica Neue Medium", 18.));
+    /// app.slider_label.set_font(tinyui::Font::message_font(0.)); // the default font size
+    /// ```
+    ///
+    pub fn set_font(&self, font: Font) {
+        unsafe { msg_send!(self.id, setFont:font.nsfont() ) }
+    }
+
+
 
     pub fn attach(&mut self, window: &mut Window) {
         window.add_subview(self.id);

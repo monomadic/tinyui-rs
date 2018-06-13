@@ -1,5 +1,6 @@
 pub mod window;
 pub mod label;
+pub mod font;
 pub mod rect;
 pub mod color;
 pub mod button;
